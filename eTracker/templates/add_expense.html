@@ -1,0 +1,73 @@
+{% extends "expenses.html" %}
+
+{% block app_content %}
+<main role="main" class="col-md-10 ml-sm-auto px-4">
+    <header class="mt-4 mb-5 text-center">
+        <h2>Add new expense</h2>
+    </header>
+    <form class="col-lg-8 col-md-10 mx-auto" action="" method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="row mb-3">
+            <div class="col">
+            {{ form.product(class="form-control", placeholder="Product") }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-4">
+            {{ form.quantity(class="form-control", placeholder="Qty/Kg",
+                            type="number", step="0.001") }}
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    {{ form.price(class="form-control", placeholder="Price",
+                                type="number", step="0.01") }}
+                    <div class="input-group-append">
+                        {{ form.currency(class="input-group-text", style="width: 75px;") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-8">
+            {{ form.category(class="form-control", placeholder="category") }}
+            </div>
+            <div class="col">
+            {{ form.freq(class="form-control") }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            {{ form.expenseDate(class="form-control", placeholder="yyyy/mm/dd", type="date") }}
+            </div>
+            <div class="col-5">
+            {{ form.submit(class="btn btn-success btn-block") }}
+            </div>
+        </div>
+        <div class="row">
+            {% for error in form.expenseDate.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.product.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.category.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.freq.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.quantity.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.price.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}<br/>
+            {% for error in form.currency.errors %}
+            <span style="color: red; font-size: 12px">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+    </form>
+</main>
+{% endblock %}

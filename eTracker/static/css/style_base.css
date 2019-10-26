@@ -1,0 +1,114 @@
+.navbar {
+    padding: 0px 5px;
+    z-index: 150;
+}
+.navbar-brand {
+    padding: 0;
+}
+.navbar-nav li > a {
+    min-height: 65px;
+    padding-top: 20px;
+}
+.sidebar {
+    background-color: #444 !important;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100px;
+    padding: 70px 0 0;
+    opacity: 0.8;
+}
+.sidebar a {
+    color: #ddd;
+    font-weight: 500;
+    padding: 10px 1rem;
+    border-bottom: 1px dotted #343434;
+}
+.sidebar a:hover {
+    background: #007bff;
+    opacity: 1 !important;
+}
+.sidebar-sticky {
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.navbar-center {
+
+}
+.navbar-right {
+
+}
+li.myNavBtn {
+
+}
+li.myNavBtn:hover {
+    background-color: #007bff;
+}
+li.myNavLogged {
+    background-color: #007bff;
+
+}
+li.myNavLogged:hover {
+    background-color: #006aee;
+}
+.nav-item {
+    min-width: 75px;
+}
+.nav-link {
+    padding-bottom: 0px;
+}
+.nav-link:hover {
+    color: #fff !important;
+}
+.dropdown-item {
+    padding-left: 0.5rem;
+}
+.input-group-text {
+    width: 35px;
+}
+a:hover .icon-left {
+    color: #0ecf42;
+}
+.btn {
+    width: 100px;
+}
+.btn_form input['checkbox'] {
+    font-size: 14px;
+}
+.icon-msg:hover {
+    box-shadow: 0px 0px 15px 10px rgba(195,201,195,0.3);
+    background-color: rgba(195,201,195,0.3);
+    color: #0ecf42;
+}
+.navbar input {
+    background-color: #343434 !important;
+}
+.navbar input:hover, .navbar input:focus {
+    background-color: #fff !important;
+}
+.btn-outline-secondary:hover {
+    background-color: #007bff;
+}
+sup.myNav {
+    vertical-align: top;
+    position: relative;
+    top: 2.0em;
+    font-size: 0.75em;
+    color: #aaff32;
+}
+@media (min-width: 576px) {
+    li.myNavBtn {
+        text-align: center;
+        margin-left: 5px;
+        border-left: 1px solid #fff;
+        border-top: 1px solid #fff;
+        border-radius: 5px;
+        background-color: #444;
+    }
+    li.dropdown {
+        margin-right: 10px;
+    }
+}

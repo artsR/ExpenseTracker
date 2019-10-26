@@ -1,0 +1,61 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+{% if title %} {{ title }} - eTracker {% else %} EXPenseTracker {% endif %}
+{% endblock %}
+
+{% block navbar %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_base.css') }}">
+
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=#menuCollapsed>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('main.test') }}">
+                <span style="color: lightskyblue; font-size: 45px;">e</span><sup style="vertical-align: sup; font-size: small;">TRACKER</sup>
+            </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="menuCollapsed">
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_anonymous %}
+                <li class="myNavfield"><a href="{{ url_for('auth.register') }}">Sign Up</a></li>
+                <li class="myNavfield"><a href="{{ url_for('auth.login') }}">Sign In</a></li>
+                {% else %}
+                <li class="myNavfield"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <!-- {% if category %} {{ category }} {% else %} "alert-info" {% endif %} -->
+        <div class="alert alert-{% if category %}{{ category }} {% else %} 'info' {% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {# application content needs to be provided in the app_content block #}
+    {% block app_content %}{% endblock %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,4 @@
+include eTracker/#fix#exptracker.db
+graft eTracker/static
+graft eTracker/templates
+global-exclude *.pyc

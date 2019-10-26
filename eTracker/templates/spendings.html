@@ -1,0 +1,72 @@
+{% extends "expenses.html" %}
+
+{% block app_content %}
+<main role="main" class="col-md-10 mt-4 ml-sm-auto px-4">
+    <header class="text-center">
+        <h2 class="h3">List of your spendings :</h2>
+    </header>
+    <table class="table mt-4">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Date</th>
+          <th scope="col">Product</th>
+          <th scope="col">Category</th>
+          <th scope="col">Freq</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price</th>
+          <th scope="col">Currency</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for expObj in expenses.items %}
+        <tr>
+          <th scope="row">{{ loop.index + expenses.per_page * (expenses.page-1) }}</th>
+
+            {% for col in expObj[1:] %}
+            <td>{{ col }}</td>
+            {% endfor %}
+
+            <td class="">
+              <a class="icon" title="Edit Record"
+                    href="{{ url_for('main.edit_expense', expense_id=expObj[0] ) }}">
+                  <span class="fa fa-pencil glyphicon icon-pencil"></span>
+              </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav aria-label="...">
+        <ul class="pagination pagination-md">
+            <li class="page-item{% if not prev_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ prev_url or '#' }}"
+                    {% if not prev_url %}{{ "tabindex='-1'" }}{% endif %}>
+                    Previous
+                </a>
+            </li>
+            {% for i in expenses.iter_pages() %}
+
+            {% if i == None %}
+            <li class="page-item disabled"><span>...</span></li>
+            {% else %}
+            <li class="page-item {% if i == expenses.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('main.spendings', page=i) }}">
+                    {{ i }}
+                </a>
+            </li>
+            {% endif %}
+
+            {% endfor %}
+            <li class="page-item{% if not next_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ next_url or '#' }}"
+                    {% if not next_url %}{{ "tabindex='-1'" }}{% endif %}>
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</main>
+{% endblock %}
