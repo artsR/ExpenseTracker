@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
                                 Expense.category, Expense.freq,
                                 Expense.quantity, Expense.price,
                                 Expense.currency).filter(
-                                Expense.user == self).filter(**filters)
+                                Expense.user == self)
 
     def __repr__(self):
         return f"<User(id= {self.id}, username = {self.username}, email = {self.email})"

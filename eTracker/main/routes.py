@@ -38,12 +38,17 @@ def spendings():
     filters = {}
 
     form = FiltersForm()
-    form.categories.choices = [ (col.category.lower(), col.category)
+    form.category.choices = [ (col.category.lower(), col.category)
                         for col in current_user.get_categories().all() ]
+    form.freq.choices = [(col.freq.lower(),col.freq)
+                        for col in db.session.query(Expense.freq).filter(
+                                        Expense.user == current_user).group_by(
+                                        Expense.freq).all() ]
 
-    # if form.validate_on_submit():
-    #     filters.update( {k: v for k, v in form.data.items() if v != None and k != 'csrf_token'} )
-    #     flash(filters)
+    # filters = {getattr(Expense, attr): v for attr, v in form.data.items() }
+    #                 if v != None and attr != 'csrf_token' and attr != 'submit' }
+    filters = {attr: v for attr,v in form.data.items()}
+    flash(filters)
 
     expenses = current_user.spendings(filters).paginate(
                     page, per_page, 0)
@@ -56,7 +61,7 @@ def spendings():
                         next_url=next_url, prev_url=prev_url)
 
 
-@bp.route('/expenses/edit_spending/<int:expense_id>', methods=['GET', 'POST'])
+@bp.route('/expenses/edit_expense/<int:expense_id>', methods=['GET', 'POST'])
 @login_required
 def edit_expense(expense_id):
 
@@ -66,6 +71,8 @@ def edit_expense(expense_id):
         abort(403)
 
     form = AddExpenseForm()
+    currency_grp = db.session.query(Currency.abbr).filter_by(user=current_user).all()
+    form.currency.choices = [(curr[0], curr[0]) for curr in currency_grp]
 
     if form.validate_on_submit():
 

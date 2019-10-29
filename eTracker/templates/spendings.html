@@ -5,10 +5,17 @@
     <div class="container mb-2">
         <form class="" action="" method="post">
             <div class="row">
-                <div class="col-3">
                     {{ form.hidden_tag() }}
-
-                    {{ form.categories(class="form-control") }}
+                <div class="col-3">
+                    {{ form.category(class="form-control") }}
+                </div>
+                <div class="col-3">
+                    {{ form.freq(class="form-control") }}
+                </div>
+                <div class="col-3">
+                    <h1 class="h6 mb-1">Choice date</h1>
+                    {{ form.beforeDate(class="form-control mb-1", type="date") }}
+                    {{ form.afterDate(class="form-control mb-1", type="date") }}
                 </div>
             </div>
             <div class="row">
@@ -17,7 +24,6 @@
                 </div>
             </div>
         </form>
-
     </div>
     <header class="text-center">
         <h2 class="h3">List of your spendings :</h2>

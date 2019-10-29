@@ -32,7 +32,8 @@ class CurrencyForm(FlaskForm):
 
 
 class FiltersForm(FlaskForm):
-    date_after = DateField('dateAfter')
-    date_before = DateField('dateBefore')
-    categories = SelectMultipleField('categories')
+    beforeDate = DateField('beforeDate')
+    afterDate = DateField('afterDate')
+    category = SelectMultipleField('categories')
+    freq = SelectMultipleField('freq', choices=[])
     submit = SubmitField('Apply')
