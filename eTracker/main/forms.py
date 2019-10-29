@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import ( StringField, DateField, FloatField, DecimalField,
-                SubmitField, SelectField )
+                SubmitField, SelectField, RadioField, SelectMultipleField )
 from wtforms.validators import DataRequired
-
 
 
 
@@ -12,8 +11,7 @@ class AddExpenseForm(FlaskForm):
     product = StringField('Product', [DataRequired()] )
     quantity = FloatField('quantity')
     price = DecimalField('price', [DataRequired()] )
-    currency = SelectField('currency', default='pln',
-                    choices=[ ('pln', 'PLN'), ('lv', 'LV'), ('eur', 'EUR'), ('usd', 'USD') ])
+    currency = SelectField('currency', default='pln', validators=[DataRequired()])
     category = StringField('Category')
     freq = SelectField('Freq', default='daily',
                     choices=[ ('daily', 'daily'), ('monthly', 'monthly'),
@@ -28,5 +26,13 @@ class UploadForm(FlaskForm):
 
 
 class CurrencyForm(FlaskForm):
-    abv = StringField('Abv', [DataRequired()])
+    abbr = StringField('Abbr', [DataRequired()])
     name = StringField('Name')
+    submit = SubmitField('Add')
+
+
+class FiltersForm(FlaskForm):
+    date_after = DateField('dateAfter')
+    date_before = DateField('dateBefore')
+    categories = SelectMultipleField('categories')
+    submit = SubmitField('Apply')

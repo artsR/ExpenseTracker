@@ -19,17 +19,17 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.pswd_hash, password)
 
-    def get_groups(self, group):
-        return Expense.query.filter(Expense.user == self).group_by(
+    def get_categories(self):
+        return db.session.query(Expense.category).filter(Expense.user == self).group_by(
                 Expense.category)
 
-    def spendings(self):
+    def spendings(self, filters):
         return db.session.query(Expense.id,
                                 Expense.expenseDate, Expense.product,
                                 Expense.category, Expense.freq,
                                 Expense.quantity, Expense.price,
                                 Expense.currency).filter(
-                                Expense.user == self)
+                                Expense.user == self).filter(**filters)
 
     def __repr__(self):
         return f"<User(id= {self.id}, username = {self.username}, email = {self.email})"
@@ -51,7 +51,8 @@ class Expense(db.Model):
 
 
 class Currency(db.Model):
-    abr = db.Column(db.String(10), unique=True, index=True, primary_key=True)
+    id = db.Column(db.Integer, db.Sequence('expense_id_seq'), primary_key=True)
+    abbr = db.Column(db.String(10))
     name = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

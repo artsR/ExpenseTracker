@@ -42,3 +42,4 @@ from eTracker import models
 from flask_admin.contrib.sqla import ModelView
 admin.add_view(ModelView(models.User, db.session))
 admin.add_view(ModelView(models.Expense, db.session))
+admin.add_view(ModelView(models.Currency, db.session))

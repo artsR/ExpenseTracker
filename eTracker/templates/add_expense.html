@@ -5,7 +5,8 @@
     <header class="mt-4 mb-5 text-center">
         <h2>Add new expense</h2>
     </header>
-    <form class="col-lg-8 col-md-10 mx-auto" action="" method="post">
+    <form class="col-lg-8 col-md-10 mx-auto" method="post"
+        action="{% if expense_id %}{{ url_for('main.edit_expense', expense_id=expense_id) }}{% endif %}">
         {{ form.hidden_tag() }}
 
         <div class="row mb-3">
@@ -37,12 +38,21 @@
             {{ form.freq(class="form-control") }}
             </div>
         </div>
-        <div class="row">
+        <div class="row mb-3">
             <div class="col">
             {{ form.expenseDate(class="form-control", placeholder="yyyy/mm/dd", type="date") }}
             </div>
             <div class="col-5">
+            {% if expense_id %}
+            {{ form.submit(class="btn btn-success btn-block", value='Update') }}
+            {% else %}
             {{ form.submit(class="btn btn-success btn-block") }}
+            {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('main.spendings') }}" class="btn btn-secondary" name="button">Back</a>
             </div>
         </div>
         <div class="row">

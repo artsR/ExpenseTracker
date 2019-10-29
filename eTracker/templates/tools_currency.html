@@ -3,34 +3,92 @@
 {% block app_content %}
 <main role="main" class="col-md-10 ml-sm-auto px-4">
     <header class="text-center">
-        <h2>Currency added into your account :</h2>
+        <h2>Currency :</h2>
     </header>
-    <div class="col-6 mr-auto">
+    <div class="col-5 mr-auto">
         <table class="table mt-4">
             <thead class="thead-light">
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Currency</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">...</th>
                 </tr>
             </thead>
             <tbody>
-                {% for i, curr in currs %}
+                {% for curr in currs %}
                 <tr>
-                    <th scope="row">{{ i }}</th>
-                    <td>{{ curr }}</td>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ curr.abbr }}</td>
+                    <td>{{ curr.name }}</td>
+                    <td>
+                        <button id="{{ curr.id }}" onClick="get_currID(this.id)"
+                                type="button" class="btn p-0 w-auto"
+                                data-toggle="modal" data-target="#deleteCurrency">
+                            <span class="fa fa-trash text-danger"></span>
+                        </button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="col-4">
-        <form class="inline-form mx-auto" action="" method="post">
+    <div class="container col-6">
+        <header class="mb-3 w-75">
+            <h1 class="h6 text-center">Add new currency :</h1>
+            <hr/>
+        </header>
+        <form class="mx-auto" action="" method="post">
             {{ form.hidden_tag() }}
-
-            <button class="btn btn-primary btn-lg" type="submit" name="button">
-                Add
-            </button>
+            <div class="form-row">
+                <div class="form-group col-6">
+                    {{ form.name(id="inputName", placeholder="name",
+                                    class="form-control") }}
+                    <div class="w-100 mb-2"></div>
+                        {{ form.abbr(id="inputAbbr", placeholder="abbreviation",
+                                    class="form-control") }}
+                </div>
+                <div class="form-group col-6 align-items-center">
+                    <button class="btn btn-primary btn-md h-100" type="submit" name="button">
+                        OK
+                    </button>
+                </div>
+            </div>
         </form>
     </div>
 </main>
+<!-- Modal -->
+<div class="modal fade" id="deleteCurrency" tabindex="-1" role="dialog" aria-labelledby="deleteCurrencyLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCurrencyLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this currency?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.delete_currency') }}" method="post">
+            <input id='confirm' name='id' type="hidden"/>
+            <input type="submit" class="btn btn-danger" value="Delete"/>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ----- -->
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+    function get_currID(curr_id) {
+        document.getElementById('confirm').value = curr_id;
+    }
+</script>
+{% endblock %}
+
 {% endblock %}
