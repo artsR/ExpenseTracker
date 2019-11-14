@@ -66,6 +66,13 @@ li.myNavLogged:hover {
 .dropdown-item {
     padding-left: 0.5rem;
 }
+table:hover {
+    cursor: context-menu;
+}
+tr.curr_default {
+    background-color: #eee;
+    font-style: italic;
+}
 .input-group-text {
     width: 35px;
 }

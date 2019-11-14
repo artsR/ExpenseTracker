@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, abort
 from flask import current_app
 from flask_login import current_user, login_required
 from eTracker import db
-from eTracker.models import User, Expense, Currency
+from eTracker.models import User, Expense, Currency, CurrencyOfficialAbbr
 from eTracker.main import bp
 from eTracker.main.forms import AddExpenseForm, UploadForm, CurrencyForm, FiltersForm
 from werkzeug.utils import secure_filename
@@ -204,6 +204,8 @@ def category():
 def currency():
 
     form = CurrencyForm()
+    official_currencies = db.session.query(CurrencyOfficialAbbr.abbr).all()
+    form.abbr.choices = [(curr[0], curr[0]) for curr in official_currencies]
 
     if form.validate_on_submit():
         currency = Currency(abbr=form.abbr.data.upper(), name=form.name.data,
@@ -211,9 +213,9 @@ def currency():
         db.session.add(currency)
         db.session.commit()
         flash('Currency was added into your account.', 'success')
-        redirect(url_for('main.currency'))
+        return redirect(url_for('main.currency'))
 
-    currs = Currency.query.filter_by(user = current_user).group_by(Currency.abbr).all()
+    currs = Currency.query.filter_by(user=current_user)
 
     return render_template('tools_currency.html', currs=currs, form=form)
 
@@ -222,10 +224,27 @@ def currency():
 @login_required
 def delete_currency():
 
+    if int(flask.request.form['id']) == current_user.currency_default_choice:
+        flash('You cannot delete your default currency', 'danger')
+        return redirect(url_for('main.currency'))
+
     currency = Currency.query.get_or_404(flask.request.form['id'])
     if currency.user != current_user:
         abort(403)
     flash(flask.request.form)
     flash('Currency has been deleted.', 'success')
+
+    return redirect(url_for('main.currency'))
+
+
+@bp.route('/tools/currency/default/<int:curr_id>', methods=['POST'])
+@login_required
+def default_currency():
+
+    user = User.query.filter_by(username=current_user.username).first()
+    user.currency_default = Currency.query.filter_by(id=curr_id).first()
+
+    db.session.commit()
+    flash('Your default currency has been updated.', 'success')
 
     return redirect(url_for('main.currency'))

@@ -2,6 +2,7 @@ from hashlib import  md5
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from eTracker import db, login
+from sqlalchemy import and_, text
 
 
 
@@ -10,8 +11,21 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(64), index=True, unique=True)
     pswd_hash = db.Column(db.String(128))
+    currency_default_choice = db.Column(db.Integer, db.ForeignKey('currency.id'))
     expenses = db.relationship('Expense', backref='user')
-    currency = db.relationship('Currency', backref='user')
+    currency = db.relationship(
+            'Currency',
+            backref='user',
+            foreign_keys="Currency.user_id"
+    )
+    # currency_default = db.relationship(
+    #       'Currency',
+    #       primaryjoin=(Currency.user_id == id),
+    #       foreign_keys='User.currency_default_choice',
+    #       backref='currency_default',
+    #       uselist=False,
+    # )
+
 
     def add_password(self, password):
         self.pswd_hash = generate_password_hash(password)
@@ -20,8 +34,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.pswd_hash, password)
 
     def get_categories(self):
-        return db.session.query(Expense.category).filter(Expense.user == self).group_by(
-                Expense.category)
+        return db.session.query(Expense.category).filter(
+            Expense.user == self).group_by(Expense.category)
 
     def spendings(self, filters):
         return db.session.query(Expense.id,
@@ -52,10 +66,29 @@ class Expense(db.Model):
 
 class Currency(db.Model):
     id = db.Column(db.Integer, db.Sequence('expense_id_seq'), primary_key=True)
-    abbr = db.Column(db.String(10))
+    abbr = db.Column(db.String(10), db.ForeignKey('currency_official_abbr.abbr'))
     name = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    currency_default = db.relationship(
+            'User',
+            foreign_keys='User.currency_default_choice',
+            backref='currency_default',
+            uselist=False,
+            post_update=True,
+    )
 
+    def __repr__(self):
+        return f"<Currency {self.id} {self.abbr} {self.name}"
+
+
+class CurrencyOfficialAbbr(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(10), unique=True)
+    name = db.Column(db.String(64))
+    currencies_user = db.relationship('Currency')
+
+    def __repr__(self):
+        return f"<Currency {self.id} {self.abbr} {self.name}"
 
 
 

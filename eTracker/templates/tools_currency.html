@@ -5,7 +5,7 @@
     <header class="text-center">
         <h2>Currency :</h2>
     </header>
-    <div class="col-5 mr-auto">
+    <div class="col-lg-5 mr-auto">
         <table class="table mt-4">
             <thead class="thead-light">
                 <tr>
@@ -16,16 +16,23 @@
                 </tr>
             </thead>
             <tbody>
+                {% set default_id = current_user.currency_default_choice %}
                 {% for curr in currs %}
-                <tr>
-                    <th scope="row">{{ loop.index }}<input type="radio" name="curr_default"/></th>
+                <tr class="{% if default_id == curr.id %}curr_default{% endif %}">
+                    <th scope="row">{{ loop.index }}
+                        <span class="radio">
+                            <input type="radio" name="curr_default"
+                                {% if default_id == curr.id %}checked{% endif %}/>
+                        </span>
+                        </th>
                     <td>{{ curr.abbr }}</td>
                     <td>{{ curr.name }}</td>
                     <td>
                         <button id="{{ curr.id }}" onClick="get_currID(this.id)"
                                 type="button" class="btn p-0 w-auto"
-                                data-toggle="modal" data-target="#deleteCurrency">
-                            <span class="fa fa-trash text-danger"></span>
+                                data-toggle="modal" data-target="#deleteCurrency"
+                                {% if default_id == curr.id %} disabled{% endif %}>
+                            <span class="fa fa-trash text-danger" style="pointer-events: none"></span>
                         </button>
                     </td>
                 </tr>
@@ -33,8 +40,8 @@
             </tbody>
         </table>
     </div>
-    <div class="container col-5">
-        <header class="mb-3 w-75">
+    <div class="container col-lg-5">
+        <header class="mb-3 w-md-75">
             <h1 class="h6 text-center">Add new currency :</h1>
             <hr/>
         </header>
@@ -87,7 +94,20 @@
 <script type="text/javascript">
     function get_currID(curr_id) {
         document.getElementById('confirm').value = curr_id;
-    }
+    };
+
+    $('.table tbody tr').click(function(event) {
+
+        if (event.target.type !== 'radio' && event.target.type !== 'button') {
+            $(':radio', this).trigger('click');
+            $('tr').removeClass("curr_default");
+            $(this).addClass("curr_default");
+
+            //TODO: add sending id to URL to make changes in db.
+
+        }
+    });
+
 </script>
 {% endblock %}
 

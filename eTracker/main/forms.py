@@ -26,7 +26,7 @@ class UploadForm(FlaskForm):
 
 
 class CurrencyForm(FlaskForm):
-    abbr = StringField('Abbr', [DataRequired()])
+    abbr = SelectField('Abbr', [DataRequired()], default='PLN')
     name = StringField('Name')
     submit = SubmitField('Add')
 

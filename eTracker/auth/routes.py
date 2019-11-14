@@ -8,7 +8,7 @@ from eTracker.auth.forms import LoginForm, RegistrationForm
 
 
 
-# The prefix '/auth/' is defined on registration in eTracker/__init__.py.
+# The prefix '/auth' is defined on registration in eTracker/__init__.py.
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,8 +37,10 @@ def login():
 @bp.route('/logout')
 @login_required
 def logout():
+
     logout_user()
     flash('You was logged out succesfully', 'warning')
+
     return redirect(url_for('main.index'))
 
 
