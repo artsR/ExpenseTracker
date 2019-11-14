@@ -18,7 +18,7 @@
             <tbody>
                 {% for curr in currs %}
                 <tr>
-                    <th scope="row">{{ loop.index }}</th>
+                    <th scope="row">{{ loop.index }}<input type="radio" name="curr_default"/></th>
                     <td>{{ curr.abbr }}</td>
                     <td>{{ curr.name }}</td>
                     <td>

@@ -34,6 +34,7 @@ class CurrencyForm(FlaskForm):
 class FiltersForm(FlaskForm):
     beforeDate = DateField('beforeDate')
     afterDate = DateField('afterDate')
+    product = StringField('product')
     category = SelectMultipleField('categories')
     freq = SelectMultipleField('freq', choices=[])
     submit = SubmitField('Apply')

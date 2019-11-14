@@ -5,22 +5,25 @@
     <div class="container mb-2">
         <form class="" action="" method="post">
             <div class="row">
-                    {{ form.hidden_tag() }}
-                <div class="col-3">
+                    {#{ form.hidden_tag() }#}
+                <div class="col-lg-3">
                     {{ form.category(class="form-control") }}
                 </div>
-                <div class="col-3">
+                <div class="col-lg-3">
                     {{ form.freq(class="form-control") }}
                 </div>
-                <div class="col-3">
-                    <h1 class="h6 mb-1">Choice date</h1>
+                <div class="col-lg-3">
+                    <h1 class="h6 mb-1">Choose date range:</h1>
                     {{ form.beforeDate(class="form-control mb-1", type="date") }}
                     {{ form.afterDate(class="form-control mb-1", type="date") }}
                 </div>
             </div>
             <div class="row">
+                <div class="col-9 mr-auto">
+                    {{ form.product(class="form-control", placeholder="Search Product...") }}
+                </div>
                 <div class="col-3 ml-auto">
-                    {{ form.submit(class="btn btn-sm btn-outline-primary") }}
+                    {{ form.submit(class="btn btn-md btn-outline-primary") }}
                 </div>
             </div>
         </form>

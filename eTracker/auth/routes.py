@@ -8,6 +8,8 @@ from eTracker.auth.forms import LoginForm, RegistrationForm
 
 
 
+# The prefix '/auth/' is defined on registration in eTracker/__init__.py.
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -17,7 +19,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data.lower()).first()
 
         if user is None or not user.check_password(form.password.data):
             flash('Invalid email address or password.', 'danger')
@@ -48,7 +50,7 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        new_user = User(username=form.username.data, email=form.email.data)
+        new_user = User(username=form.username.data.lower(), email=form.email.data.lower())
         new_user.add_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
