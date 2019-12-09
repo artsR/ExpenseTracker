@@ -6,7 +6,7 @@
         <h2>Currency :</h2>
     </header>
     <div class="col-lg-5 mr-auto">
-        <table class="table mt-4">
+        <table class="table mt-4" style="min-width: 340px;">
             <thead class="thead-light">
                 <tr>
                   <th scope="col">#</th>
@@ -18,7 +18,7 @@
             <tbody>
                 {% set default_id = current_user.currency_default_choice %}
                 {% for curr in currs %}
-                <tr class="{% if default_id == curr.id %}curr_default{% endif %}">
+                <tr id="currency-{{ curr.id }}" class="{% if default_id == curr.id %}curr_default{% endif %}">
                     <th scope="row">{{ loop.index }}
                         <span class="radio">
                             <input type="radio" name="curr_default"
@@ -83,32 +83,88 @@
             <input id='confirm' name='id' type="hidden"/>
             <input type="submit" class="btn btn-danger" value="Delete"/>
         </form>
-
       </div>
     </div>
   </div>
 </div>
 <!-- ----- -->
+{% endblock %}
+
 {% block scripts %}
 {{ super() }}
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
+
+    const currencyTable = document.querySelector('table tbody');
+
+    currencyTable.addEventListener('click', currencySelect);
+
+
     function get_currID(curr_id) {
         document.getElementById('confirm').value = curr_id;
     };
 
-    $('.table tbody tr').click(function(event) {
+    function handleErrors(res) {
+        if (!res.ok) throw new Error(res.error);
+        return res;
+    };
 
-        if (event.target.type !== 'radio' && event.target.type !== 'button') {
-            $(':radio', this).trigger('click');
-            $('tr').removeClass("curr_default");
-            $(this).addClass("curr_default");
+    function currencySelect(e) {
+        console.log(e.target);
+        if (e.target.type !== 'button') {
+            var currencyClicked = e.target.closest('tr');
 
-            //TODO: add sending id to URL to make changes in db.
+            if (!currencyClicked.classList.contains('curr_default')) {
 
+                var currencyID = currencyClicked.id.split('-')[1];
+                var rows = currencyTable.querySelectorAll('tr');
+                var buttonAll = currencyTable.querySelectorAll('button');
+                rows.forEach(function(row){
+                    row.classList.remove('curr_default');
+                });
+                buttonAll.forEach(function(btn){
+                    btn.disabled = false;
+                })
+                currencyClicked.classList.add('curr_default');
+                currencyClicked.querySelector('[type="radio"]').checked = true;
+                currencyClicked.querySelector('td button').disabled = true;
+
+                fetch("{{ url_for('main.default_currency') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: 'curr_id=' + currencyID
+                })
+                .then(res => res.text())
+                .then(data => window.location = data)
+                .catch(err => {
+                    const startContainer = document.querySelector('.container .row');
+                    const divAlert = createElement('div')
+
+                    divAlert.className = 'col-8 m-auto alert alert-danger';
+                    divAlert.textContent = err;
+                    startContainer.insertAdjacentElement('afterbegin', divAlert);
+                    clearError();
+                });
+            }
         }
-    });
+    };
+
+    // $('.table tbody tr').click(function(event) {
+    //     if (event.target.type !== 'button') {
+    //         $('tr').removeClass("curr_default");
+    //         $('button').prop('disabled', false);
+    //         event.currentTarget.querySelector('td button').disabled = true;
+    //         $(this).addClass("curr_default");
+    //         console.log(event.currentTarget.id.split('-')[1]);
+    //         $.post("{{ url_for('main.default_currency') }}", {
+    //             curr_id: event.currentTarget.id.split('-')[1]
+    //         }).done(function(response_url){
+    //             window.location = response_url;
+    //         });
+    //     }
+    // });
 
 </script>
-{% endblock %}
-
 {% endblock %}

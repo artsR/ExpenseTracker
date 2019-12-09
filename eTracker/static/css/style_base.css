@@ -19,6 +19,9 @@
     padding: 70px 0 0;
     opacity: 0.8;
 }
+.sidebar li.nav-item {
+    margin-right: 0 !important;
+}
 .sidebar a {
     color: #ddd;
     font-weight: 500;
@@ -35,14 +38,11 @@
     overflow-x: hidden;
     overflow-y: auto;
 }
-.navbar-center {
-
+.sidebar .dropdown-menu a:hover {
+    background-color: #eee;
 }
-.navbar-right {
-
-}
-li.myNavBtn {
-
+li.myNavBtn:active {
+    background-color: #aaff32;
 }
 li.myNavBtn:hover {
     background-color: #007bff;
@@ -63,15 +63,39 @@ li.myNavLogged:hover {
 .nav-link:hover {
     color: #fff !important;
 }
+.nav-link.nav_wallet {
+    border-radius: 7px 7px 0 0;
+}
+.nav-link.nav_wallet:hover {
+    color: #333!important;
+}
+.nav-link.nav_wallet.active {
+    border-width: 2px;
+}
 .dropdown-item {
     padding-left: 0.5rem;
+}
+.dropdown-menu {
+    width: 100%;
+    background-color: #649fe8;
+}
+.dropdown-menu a {
+    color: #fff;
+    font-size: .9em;
+}
+.dropdown-menu a:hover {
+    color: #222;
 }
 table:hover {
     cursor: context-menu;
 }
 tr.curr_default {
-    background-color: #eee;
+    color: #fff;
     font-style: italic;
+    background-color: #333;
+    border-width: 2px;
+    border-style: double;
+    border-color: #aaffcc;
 }
 .input-group-text {
     width: 35px;
@@ -115,7 +139,23 @@ sup.myNav {
 .btn.dropdown-toggle:focus {
     outline: none !important;
 }
-
+a.btn {
+    width: auto;
+}
+.fa-plus-circle {
+    color: #94de54!important;
+}
+p.wallet {
+    font-size: .9em;
+    margin-bottom: 5px;
+}
+.subwallet .h4 {
+    color: #333;
+}
+.unlocated {
+    color: #666;
+    font-style: italic;
+}
 @media (min-width: 576px) {
     li.myNavBtn {
         text-align: center;

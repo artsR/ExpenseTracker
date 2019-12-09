@@ -1,4 +1,5 @@
 from hashlib import  md5
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from eTracker import db, login
@@ -18,14 +19,14 @@ class User(UserMixin, db.Model):
             backref='user',
             foreign_keys="Currency.user_id"
     )
-    # currency_default = db.relationship(
-    #       'Currency',
-    #       primaryjoin=(Currency.user_id == id),
-    #       foreign_keys='User.currency_default_choice',
-    #       backref='currency_default',
-    #       uselist=False,
-    # )
-
+    currency_default = db.relationship(
+          'Currency',
+          foreign_keys='User.currency_default_choice',
+          uselist=False,
+    )
+    wallets = db.relationship('Wallet')
+    subwallets = db.relationship('Subwallet')
+    transactions = db.relationship('Transaction')
 
     def add_password(self, password):
         self.pswd_hash = generate_password_hash(password)
@@ -46,7 +47,7 @@ class User(UserMixin, db.Model):
                                 Expense.user == self)
 
     def __repr__(self):
-        return f"<User(id= {self.id}, username = {self.username}, email = {self.email})"
+        return f"<User(id= {self.id}, username = {self.username}, email = {self.email})>"
 
 
 class Expense(db.Model):
@@ -61,7 +62,7 @@ class Expense(db.Model):
     currency = db.Column(db.String(10))#list
 
     def __repr__(self):
-        return f"<Expense {self.id} {self.product} {self.category} {self.price}"
+        return f"<Expense {self.id} {self.product} {self.category} {self.price}>"
 
 
 class Currency(db.Model):
@@ -69,26 +70,82 @@ class Currency(db.Model):
     abbr = db.Column(db.String(10), db.ForeignKey('currency_official_abbr.abbr'))
     name = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    currency_default = db.relationship(
-            'User',
-            foreign_keys='User.currency_default_choice',
-            backref='currency_default',
-            uselist=False,
-            post_update=True,
-    )
+    #transactions = db.relationship('Transaction')
+    # currency_default = db.relationship(
+    #         'User',
+    #         foreign_keys='User.currency_default_choice',
+    #         backref='currency_default',
+    #         uselist=False,
+    #         post_update=True,
+    # )
+
+    #subwallets = db.relationship('Transaction', back_populates='currency')
+
 
     def __repr__(self):
-        return f"<Currency {self.id} {self.abbr} {self.name}"
+        return f"<Currency {self.id} {self.abbr} {self.name}>"
 
 
 class CurrencyOfficialAbbr(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     abbr = db.Column(db.String(10), unique=True)
     name = db.Column(db.String(64))
-    currencies_user = db.relationship('Currency')
+    #currencies_user = db.relationship('Currency')
+
+    @staticmethod
+    def getCurrency():
+        return db.session.query(CurrencyOfficialAbbr.id, CurrencyOfficialAbbr.abbr)
 
     def __repr__(self):
-        return f"<Currency {self.id} {self.abbr} {self.name}"
+        return f"<Currency {self.id} {self.abbr} {self.name}>"
+
+
+class Wallet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    currency = db.Column(db.Integer, db.ForeignKey('currency.id'))
+    color = db.Column(db.String(7))
+    subwallets = db.relationship('Subwallet', backref='wallet')
+    transactions = db.relationship('Transaction')
+
+    def get_amount(self):
+        return None
+
+    def add_subwallet(self):
+        pass
+
+
+class Subwallet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    wallet_id = db.Column(db.Integer, db.ForeignKey('wallet.id'))
+    name = db.Column(db.String(64), index=True)
+
+    #currencies = db.relationship('Transaction', back_populates='sub_wallet')
+
+    def transfer_funds(self, cash):
+        self.amount += cash # it should also check if the there is sufficient
+                            # funds in payer account and take money from
+                            # that account.
+
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))# Maybe I don't need it
+    wallet_id = db.Column(db.Integer, db.ForeignKey('wallet.id'))
+    subwallet_id = db.Column(db.Integer, db.ForeignKey('subwallet.id'))
+    currency_id = db.Column(db.Integer, db.ForeignKey('currency_official_abbr.id'))
+    date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    type = db.Column(db.String(64))
+    amount = db.Column(db.Float(precision='2'))
+    description = db.Column(db.String(256))
+
+
+# class AssociationSubwalletCurrency(db.Model):
+#     subwallet_id = db.Column(db.Integer, db.ForeignKey('subwallet.id'), primary_key=True)
+#     currency_id = db.Column(db.Integer, db.ForeignKey('currency_official_abbr.id'), primary_key=True)
+#     balance = db.Column(db.Float)
 
 
 

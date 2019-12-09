@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block aside %}
-<aside class="col-md-2 d-none d-md-block bg-dark sidebar">
+<aside class="col-2 d-none d-md-block bg-dark sidebar">
 <!-- hidden bar with options regarding Expenses: Add_expense, Show, Charts -->
     <div class="sidebar-sticky">
         <ul class="nav flex-column">
@@ -9,6 +9,8 @@
                 href="#">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link"
                 href="{{ url_for('main.spendings') }}">Expenses</a></li>
+            <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('main.spendings') }}">Incomes</a></li>
             <li class="nav-item"><a class="nav-link active"
                 href="{{ url_for('main.expenses_add') }}">Add Expense</a></li>
             <li class="nav-item"><a class="nav-link"

@@ -28,14 +28,14 @@
         {% if current_user.is_authenticated %}
         <div class="navbar-nav ml-auto">
             <ul class="navbar-nav">
-                <li class="nav-item myNavBtn"><a class="nav-link" href="#">
+                <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.wallets') }}">
                     <i class="fa fa-wallet"></i>Wallet</a></li>
                 <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.expenses') }}">
                     <i class="fa fa-money-check-edit-alt"></i>Expenses</a></li>
-                <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.tools') }}">
-                    <i class="fa fa-money-check-edit-alt"></i>Tools</a></li>
                 <li class="nav-item myNavBtn"><a class="nav-link" href="#">
                     <i class="fa fa-money-check-edit-alt"></i>Planning</a></li>
+                <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.tools') }}">
+                    <i class="fa fa-money-check-edit-alt"></i>Settings</a></li>
             </ul>
         </div>
         {% endif %}
@@ -88,10 +88,13 @@
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript">
+
     $("#mySidebarMenu").click(function() { set_css(); })
+
 
     function set_css() {
         $(".sidebar").toggleClass('d-none');
-    }
+    };
+
 </script>
 {% endblock %}

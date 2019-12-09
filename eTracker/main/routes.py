@@ -3,9 +3,13 @@ from flask import render_template, redirect, url_for, flash, abort
 from flask import current_app
 from flask_login import current_user, login_required
 from eTracker import db
-from eTracker.models import User, Expense, Currency, CurrencyOfficialAbbr
+from eTracker.models import (
+    User, Expense, Currency, CurrencyOfficialAbbr, Wallet
+)
 from eTracker.main import bp
-from eTracker.main.forms import AddExpenseForm, UploadForm, CurrencyForm, FiltersForm
+from eTracker.main.forms import (
+    AddExpenseForm, UploadForm, CurrencyForm, FiltersForm, WalletForm
+)
 from werkzeug.utils import secure_filename
 import flask
 
@@ -33,29 +37,41 @@ def expenses():
 @login_required
 def spendings():
 
-    per_page = current_app.config['EXP_PER_PAGE']
+    per_page = (
+        flask.request.args.get('per_page', 0, type=int)
+        if flask.request.args.get('per_page', 0, type=int)
+        else current_app.config['EXP_PER_PAGE']
+    )
     page = flask.request.args.get('page', 1, type=int)
     filters = {}
 
     form = FiltersForm()
-    form.category.choices = [ (col.category.lower(), col.category)
-                        for col in current_user.get_categories().all() ]
-    form.freq.choices = [(col.freq.lower(),col.freq)
-                        for col in db.session.query(Expense.freq).filter(
-                                        Expense.user == current_user).group_by(
-                                        Expense.freq).all() ]
+    form.category.choices = [
+        (col.category.lower(), col.category)
+        for col in current_user.get_categories().all()
+    ]
+    form.freq.choices = [
+        (col.freq.lower(), col.freq)
+        for col in db.session.query(Expense.freq).filter(
+                    Expense.user == current_user).group_by(
+                    Expense.freq).all()
+    ]
 
     # filters = {getattr(Expense, attr): v for attr, v in form.data.items() }
     #                 if v != None and attr != 'csrf_token' and attr != 'submit' }
-    filters = {attr: v for attr,v in form.data.items()}
-    flash(filters)
+    filters = {attr: v for attr, v in form.data.items()}
+    # flash(filters)
 
     expenses = current_user.spendings(filters).paginate(
                     page, per_page, 0)
-    next_url = ( url_for('main.spendings', page=expenses.next_num)
-        if expenses.has_next else None )
-    prev_url = ( url_for('main.spendings', page=expenses.prev_num)
-        if expenses.has_prev else None )
+    next_url = (
+        url_for('main.spendings', page=expenses.next_num)
+        if expenses.has_next else None
+    )
+    prev_url = (
+        url_for('main.spendings', page=expenses.prev_num)
+        if expenses.has_prev else None
+    )
 
     return render_template('spendings.html', form=form, expenses=expenses,
                         next_url=next_url, prev_url=prev_url)
@@ -120,14 +136,18 @@ def delete_expense(expense_id):
 @login_required
 def expenses_add():
 
-    form = AddExpenseForm()
-    currency_grp = db.session.query(Currency.abbr).filter_by(user=current_user).all()
-    form.currency.choices = [(curr[0], curr[0]) for curr in currency_grp]
+    form = AddExpenseForm(currency=current_user.currency_default_choice)
+    currency_gr = db.session.query(Currency.abbr).filter_by(
+        user=current_user).all()
+    form.currency.choices = [(curr.abbr, curr.abbr) for curr in currency_gr]
+
     if form.validate_on_submit():
-        expense = Expense(expenseDate=form.expenseDate.data, product=form.product.data,
-                        category=form.category.data, freq=form.freq.data,
-                        quantity=form.quantity.data, price=form.price.data,
-                        currency=form.currency.data, user=current_user)
+        expense = Expense(
+            expenseDate=form.expenseDate.data, product=form.product.data,
+            category=form.category.data, freq=form.freq.data,
+            quantity=form.quantity.data, price=form.price.data,
+            currency=form.currency.data, user=current_user
+        )
         db.session.add(expense)
         db.session.commit()
         flash('Expense added to you account.', 'success')
@@ -205,17 +225,20 @@ def currency():
 
     form = CurrencyForm()
     official_currencies = db.session.query(CurrencyOfficialAbbr.abbr).all()
-    form.abbr.choices = [(curr[0], curr[0]) for curr in official_currencies]
+    form.abbr.choices = [(curr.abbr, curr.abbr) for curr in official_currencies]
+    flash(form.data)
+    # if form.validate_on_submit():
+    #     currency = Currency(
+    #         abbr=form.abbr.data.upper(),
+    #         name=form.name.data,
+    #         user=current_user,
+    #     )
+    #     db.session.add(currency)
+    #     db.session.commit()
+    #     flash('Currency was added into your account.', 'success')
+    #     return redirect(url_for('main.currency'))
 
-    if form.validate_on_submit():
-        currency = Currency(abbr=form.abbr.data.upper(), name=form.name.data,
-                        user=current_user)
-        db.session.add(currency)
-        db.session.commit()
-        flash('Currency was added into your account.', 'success')
-        return redirect(url_for('main.currency'))
-
-    currs = Currency.query.filter_by(user=current_user)
+    currs = current_user.currency
 
     return render_template('tools_currency.html', currs=currs, form=form)
 
@@ -237,14 +260,62 @@ def delete_currency():
     return redirect(url_for('main.currency'))
 
 
-@bp.route('/tools/currency/default/<int:curr_id>', methods=['POST'])
+@bp.route('/tools/currency/default/', methods=['POST'])
 @login_required
 def default_currency():
 
+    curr_id = flask.request.form['curr_id']
+
     user = User.query.filter_by(username=current_user.username).first()
     user.currency_default = Currency.query.filter_by(id=curr_id).first()
-
     db.session.commit()
     flash('Your default currency has been updated.', 'success')
 
-    return redirect(url_for('main.currency'))
+    return url_for('main.currency')
+
+
+@bp.route('/wallet/dashboard')
+@login_required
+def wallet_dashboard():
+    return render_template('wallets.html')
+
+
+@bp.route('/wallets/', methods=['GET', 'POST'])
+@login_required
+def wallets():
+
+    form = WalletForm()
+    currency_official = CurrencyOfficialAbbr.getCurrency().all()
+    form.currency.choices = [(curr.id, curr.abbr) for curr in currency_official]
+
+    if form.validate_on_submit():
+        wallet = Wallet(
+            name=form.name.data,
+            user_id=current_user.id,
+            currency=form.currency.data,
+            color=form.color.data,
+        )
+        wallet.subwallets.append(
+            user_id=current_user.id,
+            wallet_id=wallet.id,
+            name='General',
+        )
+        # Add Transaction row to initialize wallet Balance
+        # Add Transfer row to initialize subwallet Balance
+        db.session.add(wallet)
+        db.session.commit()
+        flash('New wallet added successfully.', 'success')
+        flash(form.data)
+        return redirect(url_for('main.wallets'))
+
+    wallets = current_user.wallets
+
+    return render_template('wallets.html', form=form, wallets=wallets)
+
+
+@bp.route('/wallet/<int:wallet_id>/subwallet', methods=['GET', 'POST'])
+@login_required
+def add_subwallet(wallet_id):
+    pass
+    # if get sent currency of wallet
+    # if post wallet.add_subwallet(name='General')
