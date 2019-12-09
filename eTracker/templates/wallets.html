@@ -53,11 +53,91 @@
         </li>
     </ul>
 </div>
+<!-- Tabs content (wallets)-->
 <div class="tab-content px-3">
-    <button class="btn btn-sm btn-outline-secondary btn-block mt-2" id="new_subwallet"
-            data-toggle="modal" data-target="#subwallet_form">
-        Add subwallet
-    </button>
+    <div class="btn-group mt-3">
+        <button class="btn btn-sm btn-outline-secondary btn-block mt-2" id="new_subwallet"
+                data-toggle="modal" data-target="#subwallet_form">
+            Add subwallet
+        </button>
+        <button class="btn btn-sm btn-outline-info btn-block mt-2 ml-2" id="transfer_btn">
+            Transfer
+        </button>
+    </div>
+    <!-- Transfer form -->
+    <div class="border border-3 border-dark rounded my-4 px-2 py-3"
+            style="display: none;" id="transfer_div">
+        <form class="form-row align-items-center"
+                action="{{ url_for('main.transfer') }}" method="post">
+            <div class="col-3">
+                <div class="form-group form-group-sm row ml-0">
+                    <label for="wallet_id1" class="col-form-label mr-2">Wallet</label>
+                    <select name="wallet_id1" class="form-control col-6" id="wallet_id1">
+                    {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}">{{ wallet.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group form-group-sm row ml-0">
+                    <label for="wallet_id2" class="col-form-label mr-2">Wallet</label>
+                    <select name="wallet_id2" class="form-control col-6" id="wallet_id2">
+                    {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}">{{ wallet.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="form-group row ml-0">
+                    <input class="form-control col-11" type="number" name="sent_amount"
+                            placeholder="Funds sent"/>
+                </div>
+                <div class="form-group row ml-0">
+                    <input class="form-control col-11" type="text" name="sent_amount"
+                            value="USD" disabled/>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="form-group row ml-0">
+                    <input class="form-control col-11" type="number" name="sent_amount"
+                            placeholder="Funds received"/>
+                </div>
+                <div class="form-group row ml-0">
+                    <input class="form-control col-11" type="text" name="sent_amount"
+                            value="USD" disabled/>
+                </div>
+            </div>
+            <div class="col-3 ml-5">
+                <div class="form-group form-group-sm row ml-0">
+                    <label for="wallet" class="col-form-label mr-2">Wallet</label>
+                    <select name="wallet_id1" class="form-control col-6" id="wallet_id1">
+                    {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}">{{ wallet.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group form-group-sm row ml-0">
+                    <label for="wallet" class="col-form-label mr-2">Wallet</label>
+                    <select name="wallet_id1" class="form-control col-6" id="wallet_id1">
+                    {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}">{{ wallet.name }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-1">
+                <div class="form-group form-group-sm ml-0">
+                    <button type="submit" class="btn btn-outline-success" id="transfer_submit">
+                        Transfer
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="transfer_back">
+                        Back
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- End Transfer Form -->
     {% for wallet in wallets %}
     <div class="col-md-12 tab-pane mt-3 p-3 h-100" id="wallet{{ wallet.id }}"
         style="border: 2px solid {{ wallet.color }}; border-radius: 5px;">
@@ -68,10 +148,10 @@
             <p class='wallet'>Currency: USD</p>
             <p class='wallet'>Balance: {{ '{0:,.2f}'.format(1000) }}</p>
         </div>
-        <h5 class="unlocated h6">General: {{ '{0:,.2f}'.format(1000) }}</h5>
         {% for subwallet in wallet.subwallets %}
-        <h4 class="subwallet h6">{{ subwallet.name }}:</h4> <!--class="
-            {%if subwallet == 'General'%}unlocated{%else%}subwallet{%endif%} h6" -->
+        <h4 class="{%if subwallet.name == 'General'%}unlocated{%else%}subwallet{%endif%} h6">
+            {{ subwallet.name }}: {{ '{0:,.2f}'.format(1000) }}
+        </h4>
         {% endfor %}
     </div>
     </div>
@@ -125,12 +205,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="" method="post">
-                    <input type="text" class="form-control" id="subwallet_name"
-                            placeholder="Subwallet name">
+                <form action="{{ url_for('main.add_subwallet') }}" method="post">
                     <div class="form-group">
                         <label for="wallet" class="col-form-label">Wallet</label>
-                        <select class="form-control" id="wallet">
+                        <select name="wallet_id" class="form-control" id="wallet_id">
                         {% for wallet in wallets %}
                         <option value="{{ wallet.id }}">{{ wallet.name }}</option>
                         {% endfor %}
@@ -139,8 +217,8 @@
                     </div>
                     <div class="form-group">
                         <label for="subwallet_field" class="col-form-label">Subwallet</label>
-                        <input class="form-control" type="text" list="subwallets_fields" id="subwallet_field"
-                                placeholder="Create new or choose existing"/>
+                        <input name="name" class="form-control" type="text" list="subwallets_fields"
+                                placeholder="Create new or choose existing" id="subwallet_field"/>
                         <datalist id="subwallets_fields">
                         {% for subwallet in current_user.subwallets %}
                         <option value="{{ subwallet.name }}">
@@ -149,7 +227,8 @@
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
-                        <input type="button" class="btn btn-outline-primary" value="Create" id="add_subwallet"/>
+                        <input type="submit" class="btn btn-outline-primary"
+                                value="Create" id="add_subwallet"/>
                     </div>
                 </form>
             </div>
@@ -185,11 +264,14 @@ pickr1.on('save', function(){
     document.getElementById('wallet_color').value = pickr1.getSelectedColor().toHEXA().toString();
 });
 
-document.getElementById('add_subwallet').addEventListener('click', addSubwallet);
+const transferBtn = document.getElementById('transfer_btn');
+const transferDiv = document.getElementById('transfer_div');
+const transferBack = document.getElementById('transfer_back');
 
-function addSubwallet() {
-    const xhr = new XMLHttpRequest();
-}
+
+transferBtn.addEventListener('click', () => transferDiv.style.display = 'block');
+transferBack.addEventListener('click', () => transferDiv.style.display = 'none');
+
 
 </script>
 {% endblock %}

@@ -1,10 +1,10 @@
 import os
-from flask import render_template, redirect, url_for, flash, abort
+from flask import render_template, redirect, url_for, flash, abort, jsonify
 from flask import current_app
 from flask_login import current_user, login_required
 from eTracker import db
 from eTracker.models import (
-    User, Expense, Currency, CurrencyOfficialAbbr, Wallet
+    User, Expense, Currency, CurrencyOfficialAbbr, Wallet, Subwallet
 )
 from eTracker.main import bp
 from eTracker.main.forms import (
@@ -295,15 +295,17 @@ def wallets():
             currency=form.currency.data,
             color=form.color.data,
         )
-        wallet.subwallets.append(
+        db.session.add(wallet)
+        db.session.commit()
+        subwallet = Subwallet(
             user_id=current_user.id,
             wallet_id=wallet.id,
             name='General',
         )
+        wallet.subwallets.append(subwallet)
+        db.session.commit()
         # Add Transaction row to initialize wallet Balance
         # Add Transfer row to initialize subwallet Balance
-        db.session.add(wallet)
-        db.session.commit()
         flash('New wallet added successfully.', 'success')
         flash(form.data)
         return redirect(url_for('main.wallets'))
@@ -313,9 +315,32 @@ def wallets():
     return render_template('wallets.html', form=form, wallets=wallets)
 
 
-@bp.route('/wallet/<int:wallet_id>/subwallet', methods=['GET', 'POST'])
+@bp.route('/wallet/subwallets/', methods=['GET', 'POST'])
 @login_required
-def add_subwallet(wallet_id):
-    pass
+def add_subwallet():
     # if get sent currency of wallet
     # if post wallet.add_subwallet(name='General')
+    if flask.request.method == 'POST':
+        wallet = Wallet.query.filter_by(id=flask.request.form['wallet_id']).first()
+        subwallet = Subwallet.query.filter(
+            (Subwallet.wallet == wallet) &
+            (Subwallet.name == flask.request.form['name'])
+        )
+        if not subwallet:
+            subwallet = Subwallet(
+                user_id=current_user.id,
+                wallet_id=flask.request.form['wallet_id'],
+                name=flask.request.form['name'],
+            )
+            wallet.subwallets.append(subwallet)
+            db.session.commit()
+            flash(flask.request.form)
+            return redirect(url_for('main.wallets'))
+        else:
+            flash('You cannot use the same name within one wallet', 'danger')
+            return redirect(url_for('main.wallets'))
+
+@bp.route('/transfer/', methods=['GET', 'POST'])
+@login_required
+def transfer():
+    pass

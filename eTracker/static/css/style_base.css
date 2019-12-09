@@ -156,6 +156,7 @@ p.wallet {
     color: #666;
     font-style: italic;
 }
+
 @media (min-width: 576px) {
     li.myNavBtn {
         text-align: center;
