@@ -1,5 +1,3 @@
 /instance/**
 *.env
 *.pyc
-
-*.db

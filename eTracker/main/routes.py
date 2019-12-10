@@ -226,17 +226,17 @@ def currency():
     form = CurrencyForm()
     official_currencies = db.session.query(CurrencyOfficialAbbr.abbr).all()
     form.abbr.choices = [(curr.abbr, curr.abbr) for curr in official_currencies]
-    flash(form.data)
-    # if form.validate_on_submit():
-    #     currency = Currency(
-    #         abbr=form.abbr.data.upper(),
-    #         name=form.name.data,
-    #         user=current_user,
-    #     )
-    #     db.session.add(currency)
-    #     db.session.commit()
-    #     flash('Currency was added into your account.', 'success')
-    #     return redirect(url_for('main.currency'))
+
+    if form.validate_on_submit():
+        currency = Currency(
+            abbr=form.abbr.data.upper(),
+            name=form.name.data,
+            user=current_user,
+        )
+        db.session.add(currency)
+        db.session.commit()
+        flash('Currency was added into your account.', 'success')
+        return redirect(url_for('main.currency'))
 
     currs = current_user.currency
 
@@ -315,6 +315,20 @@ def wallets():
     return render_template('wallets.html', form=form, wallets=wallets)
 
 
+@bp.route('/wallet/delete/', methods=['POST'])
+@login_required
+def delete_wallet():
+
+    wallet = Wallet.query.get_or_404(flask.request.form['id'])
+    if wallet.user_id != current_user.id:
+        abort(403)
+
+    flash(flask.request.form)
+    flash('Wallet has been deleted.', 'success')
+
+    return redirect(url_for('main.wallets'))
+
+
 @bp.route('/wallet/subwallets/', methods=['GET', 'POST'])
 @login_required
 def add_subwallet():
@@ -340,7 +354,30 @@ def add_subwallet():
             flash('You cannot use the same name within one wallet', 'danger')
             return redirect(url_for('main.wallets'))
 
-@bp.route('/transfer/', methods=['GET', 'POST'])
+
+@bp.route('/transfer/', methods=['POST'])
 @login_required
 def transfer():
     pass
+
+
+@bp.route('/transfer/<int:wallet_id>', methods=['GET'])
+@login_required
+def subwallet(wallet_id):
+    wallet = Wallet.query.filter(
+        (Wallet.user_id == current_user.id) &
+        (Wallet.id == wallet_id)
+    ).first()
+
+    subwallets = [
+        {'id': subwallet.id, 'name': subwallet.name}
+        for subwallet in wallet.subwallets
+    ]
+    currency = db.session.query(CurrencyOfficialAbbr).join(Wallet,
+        CurrencyOfficialAbbr.id == Wallet.currency
+    ).first()
+
+    return jsonify({
+        'sub': subwallets,
+        'currency': currency.abbr,
+    })
