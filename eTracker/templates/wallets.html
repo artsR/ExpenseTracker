@@ -53,7 +53,7 @@
         </li>
     </ul>
 </div>
-<!-- Tabs content (wallets)-->
+<!-- Tabs Content (wallets)-->
 <div class="tab-content px-3">
     <div class="btn-group mt-3">
         <button class="btn btn-sm btn-outline-secondary btn-block mt-2" id="new_subwallet"
@@ -92,7 +92,7 @@
             <div class="col-lg-2 m-auto">
                 <div class="form-group ml-0">
                     <input class="form-control col-12" type="number" name="sent_amount"
-                            placeholder="Funds sent" required/>
+                            min="0" placeholder="Funds sent" required/>
                 </div>
                 <div class="form-group ml-0">
                     <input class="form-control col-12" type="text" name="sent_amount"
@@ -101,8 +101,8 @@
             </div>
             <div class="col-lg-2 m-auto">
                 <div class="form-group ml-0">
-                    <input class="form-control col-12" type="number" name="sent_amount"
-                            placeholder="Funds received" required/>
+                    <input class="form-control col-12" type="number" name="received_amount"
+                            min="0" placeholder="Funds received" required/>
                 </div>
                 <div class="form-group ml-0">
                     <input class="form-control col-12" type="text" name="sent_amount"
@@ -142,6 +142,7 @@
         </form>
     </div>
     <!-- End Transfer Form -->
+    <!-- Subwallets -->
     {% for wallet in wallets %}
     <div class="col-md-12 tab-pane mt-3 p-3 h-100" id="wallet{{ wallet.id }}"
         style="border: 2px solid {{ wallet.color }}; border-radius: 5px;">
@@ -155,12 +156,12 @@
     <div class="col-12 mb-4" style="height: 5px; background-image: linear-gradient(270deg, #fff, {{wallet.color}});"></div>
     <div class="col-6">
         <div class="col-12 mb-3">
-            <p class='wallet'>Currency: USD</p>
-            <p class='wallet'>Balance: {{ '{0:,.2f}'.format(1000) }}</p>
+            <p class='wallet'>Currency: {{ wallet.get_currency() }}</p>
+            <p class='wallet'>Balance: {{ '{0:,.2f}'.format(wallet.get_balance()) }}</p>
         </div>
         {% for subwallet in wallet.subwallets %}
         <h4 class="{%if subwallet.name == 'General'%}unlocated{%else%}subwallet{%endif%} h6">
-            {{ subwallet.name }}: {{ '{0:,.2f}'.format(1000) }}
+            {{ subwallet.name }}: {{ '{0:,.2f}'.format(subwallet.get_balance()) }}
         </h4>
         {% endfor %}
     </div>
@@ -202,7 +203,9 @@
             {% endfor %}<br/>
         </div>
     </div>
+    <!-- End Subwallets -->
 </div>
+<!-- End Tabs Content -->
 <!-- Modal for New Subwallet -->
 <div class="modal fade" id="subwallet_form" tabindex="-1" role="dialog"
         aria-labelledby="addSubwalletLabel" aria-hidden="true">
@@ -245,7 +248,7 @@
         </div>
     </div>
 </div>
-<!-- --- -->
+<!-- End Modal -->
 <!-- Modal for delete Wallet -->
 <div class="modal fade" id="deleteWallet" tabindex="-1" role="dialog"
         aria-labelledby="deleteWalletLabel" aria-hidden="true">
@@ -270,7 +273,7 @@
     </div>
   </div>
 </div>
-<!-- ----- -->
+<!-- End Modal -->
 </main>
 {% endblock %}
 
@@ -316,8 +319,8 @@ wallet2.addEventListener('change', getSubwallets);
 function getSubwallets(e) {
     var subwalletx = document.getElementById('sub' + e.target.id);
     var currencyx = document.getElementById('currency_' + e.target.id);
-
-    fetch("/transfer/" + e.target.value)
+    console.log(currencyx);
+    fetch(`/transfer/${e.target.value}`)
     .then(res => res.json())
     .then(data => {
         var optionHTML = '';
@@ -327,7 +330,7 @@ function getSubwallets(e) {
             `;
         }
         subwalletx.innerHTML = optionHTML;
-        currencyx.value = data.currency;
+        currencyx.value = data.currency; console.log(data.wallet);
     });
 };
 

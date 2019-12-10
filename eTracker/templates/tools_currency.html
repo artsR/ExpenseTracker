@@ -140,7 +140,7 @@
                 .then(data => window.location = data)
                 .catch(err => {
                     const startContainer = document.querySelector('.container .row');
-                    const divAlert = createElement('div')
+                    const divAlert = document.createElement('div');
 
                     divAlert.className = 'col-8 m-auto alert alert-danger';
                     divAlert.textContent = err;

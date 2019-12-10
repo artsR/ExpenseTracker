@@ -358,7 +358,8 @@ def add_subwallet():
 @bp.route('/transfer/', methods=['POST'])
 @login_required
 def transfer():
-    pass
+    flash(flask.request.form)
+    return redirect(url_for('main.wallets'))
 
 
 @bp.route('/transfer/<int:wallet_id>', methods=['GET'])
@@ -374,10 +375,11 @@ def subwallet(wallet_id):
         for subwallet in wallet.subwallets
     ]
     currency = db.session.query(CurrencyOfficialAbbr).join(Wallet,
-        CurrencyOfficialAbbr.id == Wallet.currency
+        CurrencyOfficialAbbr.id == wallet.currency
     ).first()
 
     return jsonify({
         'sub': subwallets,
         'currency': currency.abbr,
+        'wallet': wallet.currency,
     })

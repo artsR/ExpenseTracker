@@ -106,11 +106,23 @@ class Wallet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     currency = db.Column(db.Integer, db.ForeignKey('currency.id'))
     color = db.Column(db.String(7))
+
     subwallets = db.relationship('Subwallet', backref='wallet')
     transactions = db.relationship('Transaction')
 
-    def get_amount(self):
-        return None
+    def get_balance(self):
+        return sum([
+            transaction.amount
+            for transaction in self.transactions
+            # I don't have to use it but I want to prepare for removing wallet_id
+            if transaction.subwallet in self.subwallets
+        ])
+
+    def get_currency(self):
+        currency = db.session.query(CurrencyOfficialAbbr).join(Wallet,
+            CurrencyOfficialAbbr.id == self.currency
+        ).first()
+        return currency.abbr
 
     def add_subwallet(self):
         pass
@@ -122,17 +134,19 @@ class Subwallet(db.Model):
     wallet_id = db.Column(db.Integer, db.ForeignKey('wallet.id'))
     name = db.Column(db.String(64), index=True)
 
-    #currencies = db.relationship('Transaction', back_populates='sub_wallet')
+    transactions = db.relationship('Transaction', backref='subwallet')
+    # currencies = db.relationship('Transaction', back_populates='sub_wallet')
 
-    def transfer_funds(self, cash):
-        self.amount += cash # it should also check if the there is sufficient
-                            # funds in payer account and take money from
-                            # that account.
+    def get_balance(self):
+        return sum([
+            transaction.amount
+            for transaction in self.transactions
+        ])
 
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))# Maybe I don't need it
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     wallet_id = db.Column(db.Integer, db.ForeignKey('wallet.id'))
     subwallet_id = db.Column(db.Integer, db.ForeignKey('subwallet.id'))
     currency_id = db.Column(db.Integer, db.ForeignKey('currency_official_abbr.id'))
