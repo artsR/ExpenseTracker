@@ -5,10 +5,18 @@
     <header class="mt-4 mb-5 text-center">
         <h2>Add new expense</h2>
     </header>
-    <form class="col-lg-8 col-md-10 mx-auto" method="post"
+    <form class="col-lg-7 col-md-10 mx-auto" method="post"
         action="{% if expense_id %}{{ url_for('main.edit_expense', expense_id=expense_id) }}{% endif %}">
         {{ form.hidden_tag() }}
 
+        <div class="row mb-3">
+            <div class="col-md-6">
+            {{ form.wallet(class="form-control") }}
+            </div>
+            <div class="col-md-6">
+            {{ form.subwallet(class="form-control") }}
+            </div>
+        </div>
         <div class="row mb-3">
             <div class="col">
             {{ form.product(class="form-control", placeholder="Product") }}
@@ -39,7 +47,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col">
+            <div class="col-7">
             {{ form.expenseDate(class="form-control", placeholder="yyyy/mm/dd", type="date") }}
             </div>
             <div class="col-5">
@@ -83,4 +91,32 @@
         </div>
     </form>
 </main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+    const walletChoices = document.getElementById('wallet');
+    const subwalletChoices = document.getElementById('subwallet');
+
+    walletChoices.addEventListener('change', listSubwallets);
+
+    function listSubwallets(e) {
+
+        fetch(`/transfer/${e.target.value}`)
+        .then(res => res.json())
+        .then(data => {
+            var subwalletOptions = '';
+            for(let subwallet of data.subwallets) {
+                subwalletOptions += `
+                    <option value="${subwallet.id}">${subwallet.name}</option>
+                `;
+            }
+            subwalletChoices.innerHTML = subwalletOptions;
+        });
+    };
+
+</script>
+
 {% endblock %}

@@ -10,14 +10,14 @@
     padding-top: 20px;
 }
 .sidebar {
-    background-color: #444 !important;
+    background-color: #444!important;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     z-index: 100px;
     padding: 70px 0 0;
-    opacity: 0.8;
+    opacity: 1;
 }
 .sidebar li.nav-item {
     margin-right: 0 !important;
@@ -31,6 +31,7 @@
 .sidebar a:hover {
     background: #007bff;
     opacity: 1 !important;
+    border-radius: 10px;
 }
 .sidebar-sticky {
     height: calc(100vh - 48px);
@@ -83,8 +84,9 @@ li.myNavLogged:hover {
     color: #fff;
     font-size: .9em;
 }
-.dropdown-menu a:hover {
+.sidebar .dropdown-menu a:hover {
     color: #222;
+    border-radius: 0px;
 }
 table:hover {
     cursor: context-menu;
@@ -128,7 +130,7 @@ sup.myNav {
     position: relative;
     top: 2.0em;
     font-size: 0.75em;
-    color: #aaff32;
+    color: #fff; /*#aaff32;*/
 }
 .bootstrap-select .bs-ok-default::after {
     width: 0.3em;
@@ -161,10 +163,11 @@ p.wallet {
     li.myNavBtn {
         text-align: center;
         margin-left: 5px;
-        border-left: 1px solid #fff;
+        /* border-left: 1px solid #fff;
         border-top: 1px solid #fff;
         border-radius: 5px;
-        background-color: #444;
+        background-color: #444;*/
+        background-color: #343a40;
     }
     li.dropdown {
         margin-right: 10px;

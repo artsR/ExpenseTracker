@@ -1,17 +1,18 @@
 import os
-from flask import render_template, redirect, url_for, flash, abort, jsonify
+from datetime import date
+from flask import render_template, redirect, url_for, flash, abort, jsonify, request
 from flask import current_app
 from flask_login import current_user, login_required
 from eTracker import db
 from eTracker.models import (
-    User, Expense, Currency, CurrencyOfficialAbbr, Wallet, Subwallet
+    User, Expense, Currency, CurrencyOfficialAbbr, Wallet, Subwallet,
+    Transaction
 )
 from eTracker.main import bp
 from eTracker.main.forms import (
     AddExpenseForm, UploadForm, CurrencyForm, FiltersForm, WalletForm
 )
 from werkzeug.utils import secure_filename
-import flask
 
 
 
@@ -38,11 +39,11 @@ def expenses():
 def spendings():
 
     per_page = (
-        flask.request.args.get('per_page', 0, type=int)
-        if flask.request.args.get('per_page', 0, type=int)
+        request.args.get('per_page', 0, type=int)
+        if request.args.get('per_page', 0, type=int)
         else current_app.config['EXP_PER_PAGE']
     )
-    page = flask.request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1, type=int)
     filters = {}
 
     form = FiltersForm()
@@ -105,7 +106,7 @@ def edit_expense(expense_id):
 
         return redirect(url_for('main.spendings'))
 
-    # elif flask.request.method == 'GET':
+    # elif request.method == 'GET':
     form.expenseDate.data = expense.expenseDate
     form.product.data = expense.product
     form.category.data = expense.category
@@ -137,19 +138,40 @@ def delete_expense(expense_id):
 def expenses_add():
 
     form = AddExpenseForm(currency=current_user.currency_default_choice)
+    form.expenseDate.data = date.today()
+
     currency_gr = db.session.query(Currency.abbr).filter_by(
         user=current_user).all()
     form.currency.choices = [(curr.abbr, curr.abbr) for curr in currency_gr]
 
+    wallet_choices = Wallet.query.filter_by(user=current_user).all()
+    form.wallet.choices = (
+        [('', '-- wallet --')]
+        + [(wallet.id, wallet.name) for wallet in wallet_choices]
+    )
+    form.subwallet.choices = [('', '-- subwallet --')]
+
     if form.validate_on_submit():
-        expense = Expense(
-            expenseDate=form.expenseDate.data, product=form.product.data,
-            category=form.category.data, freq=form.freq.data,
-            quantity=form.quantity.data, price=form.price.data,
-            currency=form.currency.data, user=current_user
-        )
-        db.session.add(expense)
-        db.session.commit()
+        # transaction = Transaction(
+        #     user_id=current_user.id,
+        #     wallet_id=form.wallet.data,
+        #     subwallet_id=form.subwallet.data,
+        #     type='Expense',
+        #     currency_id=form.currency.data,
+        #     amount=form.price.data, #or sum of prices in receipt
+        # )
+        # db.session.add(transaction)
+        # db.session.commit()
+        # for expense in expenses (one receipt can contain many expenses)
+        # expense = Expense(
+        #     expenseDate=form.expenseDate.data, product=form.product.data,
+        #     category=form.category.data, freq=form.freq.data,
+        #     quantity=form.quantity.data, price=form.price.data,
+        #     currency=form.currency.data, user=current_user,
+        #     transaction_id=transaction.id,
+        # )
+        # transaction.expenses.append(expense)
+        # db.session.commit()
         flash('Expense added to you account.', 'success')
         return redirect(url_for('main.expenses_add'))
 
@@ -162,12 +184,12 @@ def upload():
 
     form = UploadForm()
 
-    if flask.request.method == 'POST':
-        if 'customFile' not in flask.request.files:
+    if request.method == 'POST':
+        if 'customFile' not in request.files:
             flash("File wasn't uploaded correctly. Please try again", "danger")
             return redirect(url_for('main.upload'))
 
-        f = flask.request.files['customFile']
+        f = request.files['customFile']
         if f.filename == '':
             flash("File wasn't uploaded correctly. Please try again", "danger")
             return redirect(url_for('main.upload'))
@@ -186,12 +208,12 @@ def receipt():
 
     #form = receiptForm()
 
-    if flask.request.method == 'POST':
-        if 'customFile' not in flask.request.files:
+    if request.method == 'POST':
+        if 'customFile' not in request.files:
             flash("File wasn't uploaded correctly. Please try again", "danger")
             return redirect(url_for('main.upload'))
 
-        f = flask.request.files['customFile']
+        f = request.files['customFile']
         if f.filename == '':
             flash("File wasn't uploaded correctly. Please try again", "danger")
             return redirect(url_for('main.upload'))
@@ -247,14 +269,14 @@ def currency():
 @login_required
 def delete_currency():
 
-    if int(flask.request.form['id']) == current_user.currency_default_choice:
+    if int(request.form['id']) == current_user.currency_default_choice:
         flash('You cannot delete your default currency', 'danger')
         return redirect(url_for('main.currency'))
 
-    currency = Currency.query.get_or_404(flask.request.form['id'])
+    currency = Currency.query.get_or_404(request.form['id'])
     if currency.user != current_user:
         abort(403)
-    flash(flask.request.form)
+    flash(request.form)
     flash('Currency has been deleted.', 'success')
 
     return redirect(url_for('main.currency'))
@@ -264,7 +286,7 @@ def delete_currency():
 @login_required
 def default_currency():
 
-    curr_id = flask.request.form['curr_id']
+    curr_id = request.form['curr_id']
 
     user = User.query.filter_by(username=current_user.username).first()
     user.currency_default = Currency.query.filter_by(id=curr_id).first()
@@ -319,11 +341,11 @@ def wallets():
 @login_required
 def delete_wallet():
 
-    wallet = Wallet.query.get_or_404(flask.request.form['id'])
+    wallet = Wallet.query.get_or_404(request.form['id'])
     if wallet.user_id != current_user.id:
         abort(403)
 
-    flash(flask.request.form)
+    flash(request.form)
     flash('Wallet has been deleted.', 'success')
 
     return redirect(url_for('main.wallets'))
@@ -334,21 +356,21 @@ def delete_wallet():
 def add_subwallet():
     # if get sent currency of wallet
     # if post wallet.add_subwallet(name='General')
-    if flask.request.method == 'POST':
-        wallet = Wallet.query.filter_by(id=flask.request.form['wallet_id']).first()
+    if request.method == 'POST':
+        wallet = Wallet.query.filter_by(id=request.form['wallet_id']).first()
         subwallet = Subwallet.query.filter(
             (Subwallet.wallet == wallet) &
-            (Subwallet.name == flask.request.form['name'])
-        )
+            (Subwallet.name == request.form['name'])
+        ).first()
         if not subwallet:
             subwallet = Subwallet(
                 user_id=current_user.id,
-                wallet_id=flask.request.form['wallet_id'],
-                name=flask.request.form['name'],
+                wallet_id=request.form['wallet_id'],
+                name=request.form['name'],
             )
             wallet.subwallets.append(subwallet)
             db.session.commit()
-            flash(flask.request.form)
+            flash(request.form)
             return redirect(url_for('main.wallets'))
         else:
             flash('You cannot use the same name within one wallet', 'danger')
@@ -358,8 +380,29 @@ def add_subwallet():
 @bp.route('/transfer/', methods=['POST'])
 @login_required
 def transfer():
-    flash(flask.request.form)
-    return redirect(url_for('main.wallets'))
+
+    if request.method == 'POST':
+        transaction_from = Transaction(
+            user_id=current_user.id,
+            wallet_id=request.form['wallet_id1'],
+            subwallet_id=request.form['subwallet_id1'],
+            currency_id=request.form['currency_id1'],
+            type='Internal',
+            amount=-abs(float(request.form['sent_amount'])),
+        )
+        transaction_to = Transaction(
+            user_id=current_user.id,
+            wallet_id=request.form['wallet_id2'],
+            subwallet_id=request.form['subwallet_id2'],
+            currency_id=request.form['currency_id2'],
+            type='Internal',
+            amount=abs(float(request.form['received_amount'])),
+        )
+        db.session.add_all([transaction_from, transaction_to])
+        db.session.commit()
+        flash(request.form)
+        flash('Transfer was recorded successfully.','success')
+        return redirect(url_for('main.wallets'))
 
 
 @bp.route('/transfer/<int:wallet_id>', methods=['GET'])
@@ -379,7 +422,6 @@ def subwallet(wallet_id):
     ).first()
 
     return jsonify({
-        'sub': subwallets,
+        'subwallets': subwallets,
         'currency': currency.abbr,
-        'wallet': wallet.currency,
     })

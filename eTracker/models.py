@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
           foreign_keys='User.currency_default_choice',
           uselist=False,
     )
-    wallets = db.relationship('Wallet')
+    wallets = db.relationship('Wallet', backref='user')
     subwallets = db.relationship('Subwallet')
     transactions = db.relationship('Transaction')
 
@@ -53,6 +53,7 @@ class User(UserMixin, db.Model):
 class Expense(db.Model):
     id = db.Column(db.Integer, db.Sequence('expense_id_seq'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
     expenseDate = db.Column(db.Date, index=True)
     product = db.Column(db.String(140), index=True)
     category = db.Column(db.String(140), index=True)
@@ -154,6 +155,8 @@ class Transaction(db.Model):
     type = db.Column(db.String(64))
     amount = db.Column(db.Float(precision='2'))
     description = db.Column(db.String(256))
+
+    expenses = db.relationship('Expense', backref='transaction')
 
 
 # class AssociationSubwalletCurrency(db.Model):
