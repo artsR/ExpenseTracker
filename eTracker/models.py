@@ -66,6 +66,10 @@ class Expense(db.Model):
         return f"<Expense {self.id} {self.product} {self.category} {self.price}>"
 
 
+# class Income(db.Model):
+#     pass
+
+
 class Currency(db.Model):
     id = db.Column(db.Integer, db.Sequence('expense_id_seq'), primary_key=True)
     abbr = db.Column(db.String(10), db.ForeignKey('currency_official_abbr.abbr'))

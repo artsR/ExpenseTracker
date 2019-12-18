@@ -5,6 +5,7 @@
     <header class="mt-4 mb-5 text-center">
         <h2>Add new expense</h2>
     </header>
+    <!-- Form for adding new Expense -->
     <form class="col-lg-7 col-md-10 mx-auto" method="post"
         action="{% if expense_id %}{{ url_for('main.edit_expense', expense_id=expense_id) }}{% endif %}">
         {{ form.hidden_tag() }}
@@ -50,6 +51,7 @@
             <div class="col-7">
             {{ form.expenseDate(class="form-control", placeholder="yyyy/mm/dd", type="date") }}
             </div>
+            <!-- Button Text for update or create Expense: -->
             <div class="col-5">
             {% if expense_id %}
             {{ form.submit(class="btn btn-success btn-block", value='Update') }}
@@ -57,12 +59,14 @@
             {{ form.submit(class="btn btn-success btn-block") }}
             {% endif %}
             </div>
+            <!-- End Button -->
         </div>
         <div class="row">
             <div class="col">
                 <a href="{{ url_for('main.spendings') }}" class="btn btn-secondary" name="button">Back</a>
             </div>
         </div>
+        <!-- Errors for debug purpose -->
         <div class="row">
             {% for error in form.errors %}
             <span style="color: red; font-size: 12px">[{{ error }}]</span>
@@ -89,6 +93,7 @@
             <span style="color: red; font-size: 12px">[{{ error }}]</span>
             {% endfor %}
         </div>
+        <!-- End Errors -->
     </form>
 </main>
 {% endblock %}
@@ -103,7 +108,7 @@
     walletChoices.addEventListener('change', listSubwallets);
 
     function listSubwallets(e) {
-
+        // Get list of Subwallets for chosen Wallet:
         fetch(`/transfer/${e.target.value}`)
         .then(res => res.json())
         .then(data => {

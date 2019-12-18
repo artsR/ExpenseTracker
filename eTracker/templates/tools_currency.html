@@ -64,7 +64,7 @@
         </form>
     </div>
 </main>
-<!-- Modal -->
+<!-- Modal for Delete Currency from list-->
 <div class="modal fade" id="deleteCurrency" tabindex="-1" role="dialog" aria-labelledby="deleteCurrencyLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -87,7 +87,7 @@
     </div>
   </div>
 </div>
-<!-- ----- -->
+<!-- End Modal -->
 {% endblock %}
 
 {% block scripts %}
@@ -110,7 +110,6 @@
     };
 
     function currencySelect(e) {
-        console.log(e.target);
         if (e.target.type !== 'button') {
             var currencyClicked = e.target.closest('tr');
 

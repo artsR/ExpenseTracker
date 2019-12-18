@@ -335,19 +335,20 @@ function getSubwallets(e) {
             `;
         }
         subwalletx.innerHTML = optionHTML;
-        currencyx.value = data.currency;
-        currencyx.previousSibling.value = data.currency;
+        currencyx.value = data.currency.abbr;
+        currencyx.previousElementSibling.value = data.currency.id;
     });
 };
 
 
+// for Add Subwallet:
 const walletNewSubwallet = document.getElementById('wallet_id');
 
 walletNewSubwallet.addEventListener('change', (e) => {
     var walletCurrency = document.getElementById('wallet_currency');
     fetch(`/transfer/${e.target.value}`)
     .then(res => res.json())
-    .then(data => walletCurrency.value = data.currency)
+    .then(data => walletCurrency.value = data.currency.abbr)
 });
 
 

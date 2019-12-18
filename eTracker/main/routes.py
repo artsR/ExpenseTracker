@@ -423,5 +423,5 @@ def subwallet(wallet_id):
 
     return jsonify({
         'subwallets': subwallets,
-        'currency': currency.abbr,
+        'currency': {'abbr': currency.abbr, 'id': currency.id}
     })
