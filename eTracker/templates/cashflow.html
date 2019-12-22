@@ -8,6 +8,8 @@
             <li class="nav-item"><a class="nav-link"
                 href="#">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('main.transactions') }}">Transactions</a></li>
+            <li class="nav-item"><a class="nav-link"
                 href="{{ url_for('main.spendings') }}">Expenses</a></li>
             <li class="nav-item"><a class="nav-link"
                 href="{{ url_for('main.spendings') }}">Incomes</a></li>
@@ -23,3 +25,15 @@
 {% endblock %}
 
 {% block app_content %}{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+    document.getElementById('items_per_page').addEventListener('change', itemsPerPage);
+
+    function itemsPerPage(e) {
+        window.location.search = `per_page=${e.target.value}`;
+    }
+</script>
+{% endblock %}

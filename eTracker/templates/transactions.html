@@ -1,9 +1,9 @@
-{% extends "cashflow.html" %}
+{% extends 'cashflow.html' %}
 
 {% block app_content %}
 <main role="main" class="col-md-10 mt-4 ml-sm-auto px-4">
     <header class="text-center mb-5">
-        <h2 class="h3">List of your spendings :</h2>
+        <h2 class="h3">Your Transaction List :</h2>
     </header>
     <div class="container mb-2">
         <form class="" action="" method="post">
@@ -32,27 +32,31 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Date</th>
-          <th scope="col">Product</th>
-          <th scope="col">Category</th>
-          <th scope="col">Freq</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Price</th>
+          <th scope="col">Type</th>
+          <th scope="col">Wallet</th>
+          <th scope="col">Subwallet</th>
+          <th scope="col">Amount</th>
           <th scope="col">Currency</th>
+          <th scope="col">Description</th>
           <th scope="col">...</th>
         </tr>
       </thead>
       <tbody>
-        {% for expObj in expenses.items %}
-        <tr>
-          <th scope="row">{{ loop.index + expenses.per_page * (expenses.page-1) }}</th>
+        {% for transaction in transactions.items %}
+        <tr class="{% if transaction.amount > 0 %}text-success{% else %}text-danger{% endif %}">
+          <th scope="row">{{ loop.index + transactions.per_page * (transactions.page-1) }}</th>
 
-            {% for column in expObj[1:] %}
-            <td>{{ column }}</td>
-            {% endfor %}
+          <td scope="col">{{ transaction.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td scope="col">{{ transaction.type }}</td>
+          <td scope="col">{{ transaction.wallet_id }}</td>
+          <td scope="col">{{ transaction.subwallet_id }}</td>
+          <td scope="col">{{ transaction.amount }}</td>
+          <td scope="col">{{ transaction.currency_id }}</td>
+          <td scope="col">{{ transaction.description }}</td>
 
             <td class="">
               <a class="icon" title="Edit Record"
-                    href="{{ url_for('main.edit_expense', expense_id=expObj[0] ) }}">
+                    href="{{ url_for('main.edit_expense', expense_id=transaction.id ) }}">
                   <span class="fa fa-pencil glyphicon icon-pencil"></span>
               </a>
             </td>
@@ -70,13 +74,13 @@
                     Previous
                 </a>
             </li>
-            {% for i in expenses.iter_pages() %}
+            {% for i in transactions.iter_pages() %}
 
             {% if i == None %}
             <li class="page-item disabled"><span>. . .</span></li>
             {% else %}
-            <li class="page-item {% if i == expenses.page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('main.spendings', page=i,
+            <li class="page-item {% if i == transactions.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('main.transactions', page=i,
                         per_page=request.args.get('per_page')) }}">
                     {{ i }}
                 </a>
@@ -93,28 +97,4 @@
         </ul>
     </nav>
 </main>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-<script type="text/javascript">
-
-    const filter = document.getElementById('product');
-
-    filter.addEventListener('keyup', filter_spendings);
-
-    function filter_spendings(e) {
-        const text = e.target.value.toLowerCase();
-
-        document.querySelectorAll('tr').forEach(function(product){
-            const item = product.children[2].textContent;
-            if (item.toLowerCase().indexOf(text) != -1) {
-                product.style.display = 'table-row';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    };
-
-</script>
 {% endblock %}

@@ -19,13 +19,13 @@ f.get_pk_from_identity = get_pk_from_identity
 
 
 class AddExpenseForm(FlaskForm):
-    wallet = SelectField('Wallet', [DataRequired()])
-    subwallet = SelectField('Subwallet', [DataRequired()])
+    wallet_id = SelectField('Wallet', [DataRequired()])
+    subwallet_id = SelectField('Subwallet', [DataRequired()])
     expenseDate = DateField('ExpenseDate', [DataRequired()])
     product = StringField('Product', [DataRequired()])
     quantity = FloatField('quantity')
-    price = DecimalField('price', [DataRequired()])
-    currency = SelectField('currency', default='pln', validators=[DataRequired()])
+    price = FloatField('price', [DataRequired()])
+    currency = SelectField('currency', validators=[DataRequired()], coerce=int)
     category = StringField('Category')
     freq = SelectField('Freq', default='daily', choices=[
         ('daily', 'daily'), ('monthly', 'monthly'),

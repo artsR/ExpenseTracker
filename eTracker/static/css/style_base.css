@@ -69,6 +69,7 @@ li.myNavLogged:hover {
 }
 .nav-link.nav_wallet:hover {
     color: #333!important;
+    font-weight: bold;
 }
 .nav-link.nav_wallet.active {
     border-width: 2px;
@@ -87,6 +88,11 @@ li.myNavLogged:hover {
 .sidebar .dropdown-menu a:hover {
     color: #222;
     border-radius: 0px;
+}
+div#transfer_div,
+div#income_div,
+div#expenseDiv {
+    transition: display, 1s, easy-in-out;
 }
 table:hover {
     cursor: context-menu;
@@ -161,6 +167,7 @@ p.wallet {
 
 @media (min-width: 576px) {
     li.myNavBtn {
+        width: 70px;
         text-align: center;
         margin-left: 5px;
         /* border-left: 1px solid #fff;

@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     )
     wallets = db.relationship('Wallet', backref='user')
     subwallets = db.relationship('Subwallet')
-    transactions = db.relationship('Transaction')
+    transactions = db.relationship('Transaction', lazy='dynamic')
 
     def add_password(self, password):
         self.pswd_hash = generate_password_hash(password)
@@ -38,13 +38,15 @@ class User(UserMixin, db.Model):
         return db.session.query(Expense.category).filter(
             Expense.user == self).group_by(Expense.category)
 
-    def spendings(self, filters):
+    def get_spendings(self, filters=''):
         return db.session.query(Expense.id,
                                 Expense.expenseDate, Expense.product,
                                 Expense.category, Expense.freq,
                                 Expense.quantity, Expense.price,
                                 Expense.currency).filter(
                                 Expense.user == self)
+    def get_transactions(self):
+        return
 
     def __repr__(self):
         return f"<User(id= {self.id}, username = {self.username}, email = {self.email})>"
@@ -67,7 +69,12 @@ class Expense(db.Model):
 
 
 # class Income(db.Model):
-#     pass
+#     id = db.Column(db.Integer, db.Sequence('income_id_seq'), primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
+#     incomeDate = db.Column(db.Date, index=True)
+#     category = db.Column(db.String(140), index=True)
+#     amount = db.Column(db.Float(precision='2'))
 
 
 class Currency(db.Model):
@@ -75,7 +82,7 @@ class Currency(db.Model):
     abbr = db.Column(db.String(10), db.ForeignKey('currency_official_abbr.abbr'))
     name = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #transactions = db.relationship('Transaction')
+    # transactions = db.relationship('Transaction')
     # currency_default = db.relationship(
     #         'User',
     #         foreign_keys='User.currency_default_choice',
@@ -85,7 +92,6 @@ class Currency(db.Model):
     # )
 
     #subwallets = db.relationship('Transaction', back_populates='currency')
-
 
     def __repr__(self):
         return f"<Currency {self.id} {self.abbr} {self.name}>"

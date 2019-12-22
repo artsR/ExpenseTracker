@@ -31,7 +31,36 @@ def test():
 @bp.route('/expenses/')
 @login_required
 def expenses():
-    return render_template('expenses.html')
+    return render_template('cashflow.html')
+
+
+@bp.route('/transactions/', methods=['GET'])
+@login_required
+def transactions():
+
+    per_page = (
+        request.args.get('per_page', 0, type=int)
+        if request.args.get('per_page', 0, type=int)
+        else current_app.config['EXP_PER_PAGE']
+    )
+    page = request.args.get('page', 1, type=int)
+
+    transactions = current_user.transactions.paginate(
+        page, per_page, 0)
+
+    next_url = (
+        url_for('main.transactions', page=transactions.next_num, per_page=per_page)
+        if transactions.has_next else None
+    )
+    prev_url = (
+        url_for('main.transactions', page=transactions.prev_num, per_page=per_page)
+        if transactions.has_prev else None
+    )
+
+    form = FiltersForm()
+
+    return render_template('transactions.html', transactions=transactions,
+                        next_url=next_url, prev_url=prev_url, form=form)
 
 
 @bp.route('/spendings', methods=['GET', 'POST'])
@@ -44,33 +73,27 @@ def spendings():
         else current_app.config['EXP_PER_PAGE']
     )
     page = request.args.get('page', 1, type=int)
-    filters = {}
 
     form = FiltersForm()
-    form.category.choices = [
-        (col.category.lower(), col.category)
-        for col in current_user.get_categories().all()
-    ]
-    form.freq.choices = [
-        (col.freq.lower(), col.freq)
-        for col in db.session.query(Expense.freq).filter(
-                    Expense.user == current_user).group_by(
-                    Expense.freq).all()
-    ]
+    # form.category.choices = [
+    #     (col.category.lower(), col.category)
+    #     for col in current_user.get_categories().all()
+    # ]
+    # form.freq.choices = [
+    #     (col.freq.lower(), col.freq)
+    #     for col in db.session.query(Expense.freq).filter(
+    #         Expense.user == current_user).group_by(
+    #         Expense.freq).all()
+    # ]
 
-    # filters = {getattr(Expense, attr): v for attr, v in form.data.items() }
-    #                 if v != None and attr != 'csrf_token' and attr != 'submit' }
-    filters = {attr: v for attr, v in form.data.items()}
-    # flash(filters)
-
-    expenses = current_user.spendings(filters).paginate(
-                    page, per_page, 0)
+    expenses = current_user.get_spendings().paginate(
+        page, per_page, 0)
     next_url = (
-        url_for('main.spendings', page=expenses.next_num)
+        url_for('main.spendings', page=expenses.next_num, per_page=per_page)
         if expenses.has_next else None
     )
     prev_url = (
-        url_for('main.spendings', page=expenses.prev_num)
+        url_for('main.spendings', page=expenses.prev_num, per_page=per_page)
         if expenses.has_prev else None
     )
 
@@ -137,31 +160,26 @@ def delete_expense(expense_id):
 @login_required
 def expenses_add():
 
-    form = AddExpenseForm(currency=current_user.currency_default_choice)
+    form = AddExpenseForm()
     form.expenseDate.data = date.today()
 
-    currency_gr = db.session.query(Currency.abbr).filter_by(
-        user=current_user).all()
-    form.currency.choices = [(curr.abbr, curr.abbr) for curr in currency_gr]
+    currency_official = CurrencyOfficialAbbr.getCurrency().all()
+    form.currency.choices = [(curr.id, curr.abbr) for curr in currency_official]
 
     wallet_choices = Wallet.query.filter_by(user=current_user).all()
-    form.wallet.choices = (
-        [('', '-- wallet --')]
-        + [(wallet.id, wallet.name) for wallet in wallet_choices]
-    )
-    form.subwallet.choices = [('', '-- subwallet --')]
+    wallets = [(wallet.id, wallet.name) for wallet in wallet_choices]
 
-    if form.validate_on_submit():
-        # transaction = Transaction(
-        #     user_id=current_user.id,
-        #     wallet_id=form.wallet.data,
-        #     subwallet_id=form.subwallet.data,
-        #     type='Expense',
-        #     currency_id=form.currency.data,
-        #     amount=form.price.data, #or sum of prices in receipt
-        # )
-        # db.session.add(transaction)
-        # db.session.commit()
+    if request.method == 'POST':
+        transaction = Transaction(
+            user_id=current_user.id,
+            wallet_id=form.wallet_id.data,
+            subwallet_id=form.subwallet_id.data,
+            type='Expense',
+            currency_id=form.currency.data,
+            amount=-abs(form.price.data), #or sum of prices in receipt
+        )
+        db.session.add(transaction)
+        db.session.commit()
         # for expense in expenses (one receipt can contain many expenses)
         # expense = Expense(
         #     expenseDate=form.expenseDate.data, product=form.product.data,
@@ -175,7 +193,7 @@ def expenses_add():
         flash('Expense added to you account.', 'success')
         return redirect(url_for('main.expenses_add'))
 
-    return render_template('add_expense.html', form=form)
+    return render_template('add_expense.html', form=form, wallets=wallets)
 
 
 @bp.route('/upload')
@@ -377,6 +395,44 @@ def add_subwallet():
             return redirect(url_for('main.wallets'))
 
 
+@bp.route('/income/', methods=['POST'])
+@login_required
+def income():
+
+    if request.method == 'POST':
+        transaction_income = Transaction(
+            user_id=current_user.id,
+            wallet_id=request.form['wallet_id'],
+            subwallet_id=request.form['subwallet_id'],
+            currency_id=request.form['currency_id'],
+            type='Income',
+            amount=abs(float(request.form['amount'])),
+        )
+        db.session.add(transaction_income)
+        db.session.commit()
+        flash('Deposit added successfully.', 'success')
+        return redirect(url_for('main.wallets'))
+
+
+@bp.route('/expense/', methods=['POST'])
+@login_required
+def expense():
+
+    if request.method == 'POST':
+        transaction_income = Transaction(
+            user_id=current_user.id,
+            wallet_id=request.form['wallet_id'],
+            subwallet_id=request.form['subwallet_id'],
+            currency_id=request.form['currency_id'],
+            type='Expense',
+            amount=-abs(float(request.form['amount'])),
+        )
+        db.session.add(transaction_income)
+        db.session.commit()
+        flash('Withdraw made successfully.', 'success')
+        return redirect(url_for('main.wallets'))
+
+
 @bp.route('/transfer/', methods=['POST'])
 @login_required
 def transfer():
@@ -408,6 +464,7 @@ def transfer():
 @bp.route('/transfer/<int:wallet_id>', methods=['GET'])
 @login_required
 def subwallet(wallet_id):
+
     wallet = Wallet.query.filter(
         (Wallet.user_id == current_user.id) &
         (Wallet.id == wallet_id)
