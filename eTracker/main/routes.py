@@ -19,7 +19,6 @@ from werkzeug.utils import secure_filename
 @bp.route('/index')
 @bp.route('/')
 def index():
-
     return render_template('index.html')
 
 
@@ -257,6 +256,11 @@ def category():
     categories = [(i, exp.category) for i, exp in enumerate(q, 1)]
 
     return render_template('tools_category.html', categories=categories)
+
+
+@bp.route('/tools/exchange_rate/', methods=['GET'])
+def exchange_rate():
+    return render_template('tools_exrate.html')
 
 
 @bp.route('/tools/currency/', methods=['GET', 'POST'])

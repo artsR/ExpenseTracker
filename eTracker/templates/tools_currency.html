@@ -2,12 +2,16 @@
 
 {% block app_content %}
 <main role="main" class="col-md-10 ml-sm-auto px-4">
-    <header class="text-center">
-        <h2>Currency :</h2>
+    <header>
+        <div class="d-flex mt-3">
+            <span><i class="fa fa-star fa-2x text-warning mr-auto"></i></span>
+            <h2 class="text-center ml-5">Favourite Currency :</h2>
+        </div>
     </header>
-    <div class="col-lg-5 mr-auto">
+    <div class="row">
+    <div class="col-lg-5 m-0">
         <table class="table mt-4" style="min-width: 340px;">
-            <thead class="thead-light">
+            <thead class="bg-primary text-white">
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Currency</th>
@@ -40,7 +44,7 @@
             </tbody>
         </table>
     </div>
-    <div class="container col-lg-5">
+    <div class="container col-lg-5 ml-auto mt-4">
         <header class="mb-3 w-md-75">
             <h1 class="h6 text-center">Add new currency :</h1>
             <hr/>
@@ -62,7 +66,7 @@
                 </div>
             </div>
         </form>
-    </div>
+    </div></div>
 </main>
 <!-- Modal for Delete Currency from list-->
 <div class="modal fade" id="deleteCurrency" tabindex="-1" role="dialog" aria-labelledby="deleteCurrencyLabel" aria-hidden="true">
