@@ -71,7 +71,7 @@
         {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             {% for category, message in messages %}
-            <div class="col-8 m-auto alert alert-{% if category %}{{ category }} {% else %} 'info' {% endif %}" role="alert">
+            <div class="col-10 ml-auto alert alert-{% if category %}{{ category }} {% else %} 'info' {% endif %}" role="alert">
                 {{ message }}
             </div>
             {% endfor %}

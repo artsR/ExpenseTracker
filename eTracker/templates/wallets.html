@@ -93,7 +93,7 @@
                     <select name="subwallet_id1" class="form-control col-12" id="subwallet_id1"
                         required>
                     <option value="">-- subwallet --</option>
-                    {% for subwallet in wallets[0].subwallets %}
+                    {% for subwallet in wallets[:1].subwallets %}
                     <option value="{{ subwallet.id }}">{{ subwallet.name }}</option>
                     {% endfor %}
                     </select>
@@ -102,7 +102,7 @@
             <div class="col-lg-2 m-auto">
                 <div class="form-group ml-0">
                     <input class="form-control col-12" type="number" name="sent_amount"
-                            min="0" placeholder="Funds sent" required/>
+                            min="0" step=0.01 placeholder="Funds sent" required/>
                 </div>
                 <div class="form-group ml-0">
                     <input type="hidden" name="currency_id1" value=""
@@ -114,7 +114,7 @@
             <div class="col-lg-2 m-auto">
                 <div class="form-group ml-0">
                     <input class="form-control col-12" type="number" name="received_amount"
-                            min="0" placeholder="Funds received" required/>
+                            min="0" step=0.01 placeholder="Funds received" required/>
                 </div>
                 <div class="form-group ml-0">
                     <input type="hidden" name="currency_id2" value=""
@@ -137,7 +137,7 @@
                     <select name="subwallet_id2" class="form-control col-12" id="subwallet_id2"
                         required>
                     <option value="">-- subwallet --</option>
-                    {% for subwallet in wallets[0].subwallets %}
+                    {% for subwallet in wallets[:1].subwallets %}
                     <option value="{{ subwallet.id }}">{{ subwallet.name }}</option>
                     {% endfor %}
                     </select>
@@ -175,7 +175,7 @@
                     <select name="subwallet_id" class="form-control col-12" id="subwallet_id3"
                         required>
                     <option value="">-- subwallet --</option>
-                    {% for subwallet in wallets[0].subwallets %}
+                    {% for subwallet in wallets[:1].subwallets %}
                     <option value="{{ subwallet.id }}">{{ subwallet.name }}</option>
                     {% endfor %}
                     </select>
@@ -229,7 +229,7 @@
                     <select name="subwallet_id" class="form-control col-12" id="subwallet_id4"
                         required>
                     <option value="">-- subwallet --</option>
-                    {% for subwallet in wallets[0].subwallets %}
+                    {% for subwallet in wallets[:1].subwallets %}
                     <option value="{{ subwallet.id }}">{{ subwallet.name }}</option>
                     {% endfor %}
                     </select>
@@ -343,7 +343,7 @@
                 <form action="{{ url_for('main.add_subwallet') }}" method="post">
                     <div class="form-group">
                         <label for="wallet" class="col-form-label">Wallet</label>
-                        <select name="wallet_id" class="form-control" id="wallet_id">
+                        <select name="wallet_id" class="form-control" id="wallet_id" required>
                         <option value="">-- wallet --</option>
                         {% for wallet in wallets %}
                         <option value="{{ wallet.id }}">{{ wallet.name }}</option>
@@ -354,7 +354,7 @@
                     <div class="form-group">
                         <label for="subwallet_field" class="col-form-label">Subwallet</label>
                         <input name="name" class="form-control" type="text" list="subwallets_fields"
-                                placeholder="Create new or choose existing" id="subwallet_field"/>
+                                placeholder="Create new or choose existing" id="subwallet_field" required/>
                         <datalist id="subwallets_fields">
                         {% for subwallet in current_user.subwallets %}
                         <option value="{{ subwallet.name }}">

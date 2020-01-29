@@ -77,6 +77,21 @@ class Expense(db.Model):
 #     amount = db.Column(db.Float(precision='2'))
 
 
+class CurrencyOfficialAbbr(db.Model):
+    __tablename__ = "currency_official_abbr"
+    id = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(10), unique=True)
+    name = db.Column(db.String(64))
+    #currencies_user = db.relationship('Currency')
+
+    @staticmethod
+    def getCurrency():
+        return db.session.query(CurrencyOfficialAbbr.id, CurrencyOfficialAbbr.abbr)
+
+    def __repr__(self):
+        return f"<Currency {self.id} {self.abbr} {self.name}>"
+
+
 class Currency(db.Model):
     id = db.Column(db.Integer, db.Sequence('expense_id_seq'), primary_key=True)
     abbr = db.Column(db.String(10), db.ForeignKey('currency_official_abbr.abbr'))
@@ -97,20 +112,6 @@ class Currency(db.Model):
         return f"<Currency {self.id} {self.abbr} {self.name}>"
 
 
-class CurrencyOfficialAbbr(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    abbr = db.Column(db.String(10), unique=True)
-    name = db.Column(db.String(64))
-    #currencies_user = db.relationship('Currency')
-
-    @staticmethod
-    def getCurrency():
-        return db.session.query(CurrencyOfficialAbbr.id, CurrencyOfficialAbbr.abbr)
-
-    def __repr__(self):
-        return f"<Currency {self.id} {self.abbr} {self.name}>"
-
-
 class Wallet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
@@ -118,6 +119,7 @@ class Wallet(db.Model):
     currency = db.Column(db.Integer, db.ForeignKey('currency.id'))
     color = db.Column(db.String(7))
 
+    user_currency = db.relationship('Currency', backref='wallets')
     subwallets = db.relationship('Subwallet', backref='wallet')
     transactions = db.relationship('Transaction')
 

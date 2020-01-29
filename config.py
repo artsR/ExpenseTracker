@@ -21,3 +21,6 @@ class Config(object):
 
     # Pagination:
     EXP_PER_PAGE = 5
+
+    # Exchange Rate API:
+    EX_RATE_API = os.environ.get('EX_RATE_API')

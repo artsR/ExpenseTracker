@@ -423,17 +423,27 @@ def income():
 def expense():
 
     if request.method == 'POST':
-        transaction_income = Transaction(
-            user_id=current_user.id,
-            wallet_id=request.form['wallet_id'],
-            subwallet_id=request.form['subwallet_id'],
-            currency_id=request.form['currency_id'],
-            type='Expense',
-            amount=-abs(float(request.form['amount'])),
-        )
-        db.session.add(transaction_income)
-        db.session.commit()
-        flash('Withdraw made successfully.', 'success')
+        subwallet = Subwallet.query.filter(
+            (Subwallet.user_id == current_user.id) &
+            (Subwallet.id == request.form['subwallet_id'])
+        ).first()
+        has_enough_funds = subwallet.get_balance() >= float(request.form['amount'])
+
+        if has_enough_funds:
+            transaction_income = Transaction(
+                user_id=current_user.id,
+                wallet_id=request.form['wallet_id'],
+                subwallet_id=request.form['subwallet_id'],
+                currency_id=request.form['currency_id'],
+                type='Expense',
+                amount=-abs(float(request.form['amount'])),
+            )
+            db.session.add(transaction_income)
+            db.session.commit()
+            flash('Withdraw made successfully.', 'success')
+        else:
+            flash('You don\'t have enough funds.', 'danger')
+
         return redirect(url_for('main.wallets'))
 
 
@@ -442,26 +452,36 @@ def expense():
 def transfer():
 
     if request.method == 'POST':
-        transaction_from = Transaction(
-            user_id=current_user.id,
-            wallet_id=request.form['wallet_id1'],
-            subwallet_id=request.form['subwallet_id1'],
-            currency_id=request.form['currency_id1'],
-            type='Internal',
-            amount=-abs(float(request.form['sent_amount'])),
-        )
-        transaction_to = Transaction(
-            user_id=current_user.id,
-            wallet_id=request.form['wallet_id2'],
-            subwallet_id=request.form['subwallet_id2'],
-            currency_id=request.form['currency_id2'],
-            type='Internal',
-            amount=abs(float(request.form['received_amount'])),
-        )
-        db.session.add_all([transaction_from, transaction_to])
-        db.session.commit()
-        flash(request.form)
-        flash('Transfer was recorded successfully.','success')
+        subwallet = Subwallet.query.filter(
+            (Subwallet.user_id == current_user.id) &
+            (Subwallet.id == request.form['subwallet_id1'])
+        ).first()
+        has_enough_funds = subwallet.get_balance() >= float(request.form['sent_amount'])
+
+        if has_enough_funds:
+            transaction_from = Transaction(
+                user_id=current_user.id,
+                wallet_id=request.form['wallet_id1'],
+                subwallet_id=request.form['subwallet_id1'],
+                currency_id=request.form['currency_id1'],
+                type='Internal',
+                amount=-abs(float(request.form['sent_amount'])),
+            )
+            transaction_to = Transaction(
+                user_id=current_user.id,
+                wallet_id=request.form['wallet_id2'],
+                subwallet_id=request.form['subwallet_id2'],
+                currency_id=request.form['currency_id2'],
+                type='Internal',
+                amount=abs(float(request.form['received_amount'])),
+            )
+            db.session.add_all([transaction_from, transaction_to])
+            db.session.commit()
+            flash(request.form)
+            flash('Transfer was recorded successfully.','success')
+        else:
+            flash('You don\'t have enough funds.','danger')
+
         return redirect(url_for('main.wallets'))
 
 
