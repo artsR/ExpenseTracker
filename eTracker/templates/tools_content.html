@@ -1,0 +1,93 @@
+<!-- tools_content.html -->
+<div class="cards">
+  <div class="card bg-dark text-white mb-3" style="max-width: 40rem;" id="wallet_subwallet">
+    <div class="card-header">Wallet &nbsp;&nbsp;<--&nbsp;&nbsp; Subwallet</div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for wallet in current_user.wallets %}
+        <span class="badge badge-dark" style="font-size: 85%;">
+          <span class="badge badge-success">{{wallet.name}}</span>
+            {% for subwallet in wallet.subwallets %}
+            <span class="badge badge-pill badge-light" data-id="ws_{{wallet.id}}_{{subwallet.id}}">
+              {{subwallet.name}}
+              <i class="fa fa-minus text-danger remove" style="display: none; cursor: pointer;"></i>
+            </span>
+            {% endfor %}
+        </span>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="card-footer">
+      <span class="fa fa-plus text-success" data-toggle="modal"
+        data-target="#addSubwallet" style="cursor: pointer;"></span>
+      <span class="fa fa-minus text-danger removeMenu" style="cursor: pointer;"></span>
+    </div>
+  </div>
+  <div class="card bg-info text-white mb-3" style="max-width: 20rem;">
+    <div class="card-header">Wallets</div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for wallet in current_user.wallets %}
+        <span class="badge badge-secondary">{{wallet.name}}
+          <span class="badge badge-pill badge-info">{{wallet.currency.abbr}}</span>
+        </span>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="card-footer">
+      <span class="fa fa-plus text-success" data-toggle="modal"
+        data-target="#newWallet" style="cursor: pointer;"></span>
+      <span class="fa fa-list text-warning" data-toggle="modal"
+        data-target="#editWallet" style="cursor: pointer;"></span>
+    </div>
+  </div>
+  <div class="card bg-primary text-white mb-3" style="max-width: 20rem;">
+    <div class="card-header">Subwallets</div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for subwallet in current_user.subwallets %}
+        <span class="badge badge-secondary">{{subwallet.name}}</span>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="card-footer">
+      <span class="fa fa-plus text-success" data-toggle="modal"
+        data-target="#newSubwallet" style="cursor: pointer;"></span>
+      <span class="fa fa-list text-warning" data-toggle="modal"
+        data-target="#editSubwallet" style="cursor: pointer;"></span>
+    </div>
+  </div>
+  <div class="card mb-3" style="max-width: 20rem;">
+    <div class="card-header">Categories</div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for category in current_user.categories %}
+        <span class="badge badge-dark">{{category.name}}</span>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="card-footer">
+      <span class="fa fa-plus text-success" data-toggle="modal"
+        data-target="#newCategory" style="cursor: pointer;"></span>
+      <span class="fa fa-list text-warning" data-toggle="modal"
+        data-target="#editCategory" style="cursor: pointer;"></span>
+    </div>
+  </div>
+  <div class="card mb-3" style="max-width: 20rem;" id="exchange_rate_currency">
+    <div class="card-header">Exchange Rate Currency</div>
+    <div class="card-body">
+      <p class="card-text">
+        {% for currency in current_user.currencies %}
+        <span class="badge badge-secondary" data-id="currency_{{currency.id}}">{{currency.abbr}}
+          <i class="fa fa-minus text-danger remove" style="display: none; cursor: pointer;"></i></span>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="card-footer">
+      <span class="fa fa-plus text-success" data-toggle="modal"
+        data-target="#addCurrency" style="cursor: pointer;"></span>
+      <span class="fa fa-minus text-danger removeMenu" style="cursor: pointer;"></span>
+    </div>
+  </div>
+</div>
+<!-- End tools_content.html -->

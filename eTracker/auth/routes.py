@@ -4,11 +4,12 @@ from flask_login import current_user, login_user, logout_user, login_required
 from eTracker import db
 from eTracker.models import User
 from eTracker.auth import bp
-from eTracker.auth.forms import LoginForm, RegistrationForm
+from eTracker.auth.email import send_password_reset_link
+from eTracker.auth.forms import (
+    LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
+)
 
 
-
-# The prefix '/auth' is defined on registration in eTracker/__init__.py.
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,7 +36,6 @@ def login():
 
 
 @bp.route('/logout')
-@login_required
 def logout():
 
     logout_user()
@@ -53,10 +53,45 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         new_user = User(username=form.username.data.lower(), email=form.email.data.lower())
-        new_user.add_password(form.password.data)
+        new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
         flash('You Signed Up succesfully. Now you can login to our service.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form)
+
+
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+            send_password_reset_link(user)
+        flash('Check email for further instuctions', 'info')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password_request.html', form=form)
+
+
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    user = User.verify_reset_password_token(token)
+    if user is None:
+        return redirect(url_for('main.index'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been changed succesfully', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password.html', form=form)

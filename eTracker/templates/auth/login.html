@@ -1,43 +1,61 @@
+<!-- login.html -->
 {% extends "base.html" %}
 
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 {% endblock %}
 
-{% block app_content %}
-<header class="col-12 mx-auto">
-    <h1>Log in to your <span style="color: #007bff;">e</span><sup>account</sup></h1>
-    <p>Enter your username and password to get started.</p>
-</header>
-<div id="container_form">
-    <form class="" action="" method="post">
-        {{ form.hidden_tag() }}
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-            <span class="input-group-text">@</span>
-            </div>
-            {{ form.email(type='text', class='form-control', placeholder="Email address")}}
-        </div>
-        {% for error in form.email.errors %}
-        <span style="color: red; font-size: 12px">[{{ error }}]</span>
-        {% endfor %}
-
-        <div class="input-group">
-            <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-lock" style="color: #777;"></i></span>
-            </div>
-            {{ form.password(class='form-control', placeholder='Password') }}
-        </div>
-        {% for error in form.password.errors %}
-        <span style="color: red; font-size: 12px">[{{ error }}]</span>
-        {% endfor %}
-
-        {{ form.remember_me() }} {{ form.remember_me.label }}
-
-        {{ form.submit() }}
-    </form>
+{% block content %}
+<aside>
+  <div class="container">
+    <div class="sidemenu active">MENU</div>
+    <ul class="options">
+      <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+      <li><a href="{{ url_for('auth.register')}}">Register</a></li>
+    </ul>
+    <div style="clear: both;"></div>
+  </div>
+</aside>
+<div class="bootstrap-iso">
+  <div class="container">
+    {% include "alert.html" %}
+    <main>
+      <div class="authBox">
+        <header class="mx-auto">
+          <h1>Log in to your <span style="color: #007bff;">e</span><sup>account</sup></h1>
+          <p>Enter your username and password to get started.</p>
+        </header>
+        <form class="p-3" action="" method="post">
+          {{ form.hidden_tag() }}
+          <div class="authInput">
+          {{ form.email(type='text', required=True) }}
+          {{ form.email.label }}
+          </div>
+          {% for error in form.email.errors %}
+          <span style="color: red; font-size: 12px">[{{ error }}]</span>
+          {% endfor %}
+          <div class="authInput">
+            {{ form.password(required=True) }}
+            {{ form.password.label }}
+          </div>
+          <div class="form-check">
+          {{ form.remember_me(class="form-check-input") }}
+          {{ form.remember_me.label(class="form-check-label") }}
+          </div>
+          <div class="my-3">
+          {{ form.recaptcha() }}
+          </div>
+          <p>
+            <a style="color: #faf738;" href="{{ url_for('auth.reset_password_request') }}">
+              Forgot Password?
+            </a>
+          </p>
+          {{ form.submit(class="btn btn-block btn-outline-secondary mt-4 mb-3") }}
+        </form>
+      </div>
+    </main>
+  </div>
 </div>
 {% endblock %}
+<!-- End login.html -->

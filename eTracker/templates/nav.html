@@ -1,0 +1,23 @@
+<!-- nav.html -->
+<div class="nav"></div>
+  <nav id="navbar">
+    <a href="{{ url_for('main.index') }}" class="logo">e<sup>TRACKER</sup></a>
+    <ul>
+      <li><i class="fa fa-credit-card"></i><a href="{{ url_for('main.wallets') }}">Wallet</a></li>
+      <li><i class="fa fa-money"></i><a href="{{ url_for('main.cashflow') }}">Cashflow</a></li>
+      <li><i class="fa fa-area-chart"></i><a href="{{ url_for('main.planning') }}">Planning</a></li>
+      <li><i class="fa fa-spinner"></i><a href="{{ url_for('main.tools') }}">Tools</a></li>
+    </ul>
+    <span>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('auth.logout') }}">
+        <i class="fa fa-sign-out" title="Click to Logout" style="color: #FF4136;"></i>
+      </a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}">
+        <i class="fa fa-sign-in" title="Click to Sign In" style="color: #28B62C;"></i>
+      </a>
+      {% endif %}
+    </span>
+    <div class="toggle"></div>
+  </nav>

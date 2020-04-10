@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 
-{% block app_content %}
-<div class="col-12 mt-2 text-center">
-{% if current_user.is_authenticated %}
-    <h1>Hello, {{ current_user.username }}</h1>
-{% else %}
-    <h1>Hello sir</h1>
-{% endif %}
+{% block content %}
+<aside></aside>
+<div class="bootstrap-iso">
+  <div class="container">
+  {% include "alert.html" %}
+  </div>
+</div>
+<div class="container">
+  <div>
+    <h1 style="text-align: center; margin-top: 15px;">
+      e <sup>TRACKER</sup> - Your expense (tracker)
+    </h1>
+  </div>
+  <div style="text-align: center; margin-top: 15px;">
+  {% if current_user.is_authenticated %}
+      <h1>Hello, {{ current_user.username }}</h1>
+  {% else %}
+      <h1>Hello sir</h1>
+  {% endif %}
+  </div>
 </div>
 {% endblock %}

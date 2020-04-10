@@ -22,6 +22,11 @@ colour = "*"
 opencv-python = "*"
 flask-admin = "*"
 psycopg2 = "*"
+pyjwt = "*"
+flask-mail = "*"
+requests = "*"
+marshmallow = "*"
+flask-httpauth = "*"
 
 [requires]
 python_version = "3.8"

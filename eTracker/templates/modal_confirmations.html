@@ -1,0 +1,133 @@
+<!-- modal_confirmations.html -->
+<!-- Delete Wallet -->
+<div class="modal fade wholePageModal" id="deleteWallet" tabindex="-1" role="dialog"
+    aria-labelledby="deleteWalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteWalletLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this wallet?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.delete_wallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='delete_wallet_id' name='wallet_id' type="hidden" value=""/>
+          <input type="submit" class="btn btn-danger" value="Delete"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Delete Wallet -->
+<!-- Delete Subwallet -->
+<div class="modal fade wholePageModal" id="deleteSubwallet" tabindex="-1" role="dialog"
+    aria-labelledby="deleteSubwalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteSubwalletLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this subwallet?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.delete_subwallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='delete_subwallet_id' name='subwallet_id' type="hidden" value=""/>
+          <input type="submit" class="btn btn-danger" value="Delete"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Delete Subwallet -->
+<!-- Delete Category -->
+<div class="modal fade wholePageModal" id="deleteCategory" tabindex="-1" role="dialog"
+    aria-labelledby="deleteCategoryLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCategoryLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to delete this category?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.delete_category') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='delete_category_id' name='category_id' type="hidden" value=""/>
+          <input type="submit" class="btn btn-danger" value="Delete"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Delete Category -->
+<!-- Remove Subwallet from Wallet -->
+<div class="modal fade wholePageModal" id="removeSubwallet" tabindex="-1" role="dialog"
+    aria-labelledby="removeSubwalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="removeSubwalletLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to remove this subwallet from the wallet?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.remove_subwallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='remove_wallet_id' name='wallet_id' type="hidden" value=""/>
+          <input id='remove_subwallet_id' name='subwallet_id' type="hidden" value=""/>
+          <input type="submit" class="btn btn-warning" value="Remove"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Remove Subwallet from Wallet -->
+<!-- Remove Currency from Exchange Rate -->
+<div class="modal fade wholePageModal" id="removeCurrency" tabindex="-1" role="dialog"
+    aria-labelledby="removeCurrencyLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="removeCurrencyLabel">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you want to remove this currency?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+        <form class="" action="{{ url_for('main.remove_currency') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='remove_currency_id' name='currency_id' type="hidden" value=""/>
+          <input type="submit" class="btn btn-warning" value="Remove"/>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Remove Currency from Exchange Rate -->
+<!-- End modal_confirmations.html -->

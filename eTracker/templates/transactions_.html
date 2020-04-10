@@ -1,0 +1,94 @@
+{% extends 'cashflow.html' %}
+
+{% block app_content %}
+<main role="main" class="col-md-10 mt-4 ml-sm-auto px-4">
+    <header class="text-center mb-5">
+        <h2 class="h3">Your Transaction List :</h2>
+    </header>
+    <div class="container mb-2">
+      <div class="row">
+          <div class="col-7 mr-auto">
+              {{ form.product(class="form-control", placeholder="Search Product...") }}
+          </div>
+          <div class="form-inline col-md-auto ml-auto" id="per_page">
+              <label class="small font-italic pr-1" for="items_per_page">Items</label>
+              <select id="items_per_page" class="form-control">
+                  <option selected></option>
+                  <option>5</option>
+                  <option>10</option>
+                  <option>20</option>
+                  <option>50</option>
+              </select>
+          </div>
+      </div>
+    </div>
+    <table class="table mt-4 px-2">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Date</th>
+          <th scope="col">Wallet</th>
+          <th scope="col">Subwallet</th>
+          <th scope="col">Currency</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Description</th>
+          <th scope="col">...</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for transaction in transactions.items %}
+        <tr class="{% if transaction.amount > 0 %}text-success{% else %}text-danger{% endif %}">
+          <th scope="row">{{ loop.index + transactions.per_page * (transactions.page-1) }}</th>
+
+          <td scope="col">{{ transaction.date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td scope="col">{{ transaction.type }}</td>
+          <td scope="col">{{ transaction.wallet_id }}</td>
+          <td scope="col">{{ transaction.subwallet_id }}</td>
+          <td scope="col">{{ transaction.amount }}</td>
+          <td scope="col">{{ transaction.currency_id }}</td>
+          <td scope="col">{{ transaction.description }}</td>
+
+            <td class="">
+              <a class="icon" title="Edit Record"
+                    href="{{ url_for('main.edit_expense', expense_id=transaction.id ) }}">
+                  <span class="fa fa-pencil glyphicon icon-pencil"></span>
+              </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav aria-label="...">
+        <ul class="pagination pagination-md">
+            <li class="page-item{% if not prev_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ prev_url or '#' }}"
+                    {% if not prev_url %}{{ "tabindex='-1'" }}{% endif %}>
+                    Previous
+                </a>
+            </li>
+            {% for i in transactions.iter_pages() %}
+
+            {% if i == None %}
+            <li class="page-item disabled"><span>. . .</span></li>
+            {% else %}
+            <li class="page-item {% if i == transactions.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('main.transactions', page=i,
+                        per_page=request.args.get('per_page')) }}">
+                    {{ i }}
+                </a>
+            </li>
+            {% endif %}
+
+            {% endfor %}
+            <li class="page-item{% if not next_url %} disabled{% endif %}">
+                <a class="page-link" href="{{ next_url or '#' }}"
+                    {% if not next_url %}{{ "tabindex='-1'" }}{% endif %}>
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</main>
+{% endblock %}

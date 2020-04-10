@@ -1,0 +1,92 @@
+<!-- transfer_form.html -->
+<div class="border border-3 border-dark rounded my-4 px-2 py-3"
+    style="display: none;" id="transfer_div">
+  <form class="form-row align-items-center p-4"
+      action="{{ url_for('main.transfer') }}" method="post">
+    <div class="col-lg-3 mr-auto">
+      <div class="form-group form-group-sm ml-0">
+        <select name="wallet_id1" class="form-control col-12" id="wallet_id1" required>
+          <option value="">-- wallet --</option>
+          {% for wallet in wallets %}
+          <option value="{{wallet.id}}">{{wallet.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group form-group-sm ml-0">
+        <select name="subwallet_id1" class="form-control col-12" id="subwallet_id1" required>
+          <option value="">-- subwallet --</option>
+          {% for subwallet in wallets[:1].subwallets %}
+          <option value="{{subwallet.id}}">{{subwallet.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-2 m-auto">
+      <div class="form-group ml-0">
+        <input class="form-control col-12" type="number" name="sent_amount"
+            min="0" step=0.01 placeholder="sent" required/>
+      </div>
+      <div class="form-group ml-0">
+        <span class="form-control col-12" id="currency_wallet_id1" readonly>
+          ---
+        </span>
+      </div>
+    </div>
+    <div class="col-lg-2 m-auto">
+      <div class="form-group ml-0">
+        <input class="form-control col-12" type="number" name="received_amount"
+            min="0" step=0.01 placeholder="received" required/>
+      </div>
+      <div class="form-group ml-0">
+        <span class="form-control col-12" id="currency_wallet_id2" readonly>
+          ---
+        </span>
+      </div>
+    </div>
+    <div class="col-lg-3 m-auto">
+      <div class="form-group ml-0">
+        <select name="wallet_id2" class="form-control col-12" id="wallet_id2" required>
+          <option value="">-- wallet --</option>
+          {% for wallet in wallets %}
+          <option value="{{wallet.id}}">{{wallet.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group form-group-sm ml-0">
+        <select name="subwallet_id2" class="form-control col-12" id="subwallet_id2" required>
+          <option value="">-- subwallet --</option>
+          {% for subwallet in wallets[:1].subwallets %}
+          <option value="{{subwallet.id}}">{{subwallet.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <div class="form-group form-group-sm ml-0">
+        <select name="category_id" class="form-control col-12" id="category_id1" required>
+          <option value="">-- category --</option>
+          {% for category in categories %}
+          <option value="{{category.id}}">{{category.name}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="form-group form-group-sm">
+        <input class="form-control col-12" type="text" name="description"
+            placeholder="Description"/>
+      </div>
+    </div>
+    <div class="col-12 mr-auto">
+      <div class="form-group form-group-sm">
+        <button type="submit" class="btn btn-outline-primary ml-auto" id="transfer_submit">
+          Transfer
+        </button>
+        <button type="button" class="btn btn-secondary ml-auto" id="transfer_back">
+          Back
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- End transfer_form.html -->

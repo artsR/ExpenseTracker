@@ -1,0 +1,43 @@
+<!-- wallet_content.html -->
+{% macro wallet_content(wallet) %}
+<div class="card text-white bg-dark tab-pane my-5" id="wallet{{wallet.id}}"
+    style="box-shadow: 0px 0px 20px 10px {{wallet.color}};">
+  <div class="card-header" style="color: {{wallet.color}};">{{wallet.name}}
+    <div class="text-right" id="edit_wallet">
+      <button class="btn btn-sm" id="addSubwallet_{{wallet.id}}" title="Add subwallet"
+          data-toggle="modal" data-target="#addSubwallet">
+        <i class="fa fa-2x fa-circle-thin text-info" style="pointer-event: none;"></i>
+      </button>
+      <button class="btn btn-sm" id="update_{{wallet.id}}" onclick="editWallet(this)"
+          data-toggle="modal" data-target="#updateWallet">
+        <i class="fa fa-2x fa-pencil-square-o text-info" style="pointer-event: none;"></i>
+      </button>
+      <button class="btn btn-sm" id="delete_{{wallet.id}}" onclick="editWallet(this)"
+          data-toggle="modal" data-target="#deleteWallet">
+        <i class="fa fa-2x fa-trash text-info" style="pointer-event: none;"></i>
+      </button>
+    </div>
+    <div class="col-12 mb-4" style="height: 5px; background-image: linear-gradient(270deg, #fff, {{wallet.color}});"></div>
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">
+      Balance: {{ '{0:,.2f} '.format(wallet.balance_total()) }}
+      <span style="font-size: .8em;">{{wallet.currency.abbr}}</span>
+    </h4>
+    <p class="card-text">
+      <ul class="list-group col-lg-4 col-md-6">
+        {% for subwallet in wallet.subwallets %}
+        <li class="list-group-item list-group-item-dark d-flex justify-content-between
+            align-items-center" id="{{subwallet.id}}">
+          {{subwallet.name}}
+          <span class="badge badge-light badge-pill">
+            {{ '{0:,.2f}'.format(subwallet.get_balance(wallet.id)) }}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </p>
+  </div>
+</div>
+{% endmacro %}
+<!-- End wallet_content.html -->

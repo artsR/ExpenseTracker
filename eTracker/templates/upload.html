@@ -1,4 +1,4 @@
-{% extends "expenses.html" %}
+{% extends "cashflow.html" %}
 
 {% block app_content %}
 <main role="main" class="col-md-10 ml-sm-auto px-4">
@@ -15,3 +15,22 @@
     </form>
 </main>
 {% endblock %}
+
+Note that you also have to include some jQuery code
+if you want the name of the file to appear when you select a specific file:
+
+Example
+<form>
+  <div class="custom-file">
+    <input type="file" class="custom-file-input" id="customFile">
+    <label class="custom-file-label" for="customFile">Choose file</label>
+  </div>
+</form>
+
+<script>
+// Add the following code if you want the name of the file appear on select
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
+</script>

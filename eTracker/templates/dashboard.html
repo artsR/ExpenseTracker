@@ -1,0 +1,182 @@
+<!-- dashboard.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<aside>
+  <div class="container">
+    <div class="sidemenu">MENU</div>
+    <ul class="options">
+      <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('main.wallets') }}">Wallets</a></li>
+    </ul>
+    <div style="clear: both;"></div>
+  </div>
+</aside>
+<div class="bootstrap-iso">
+  <div class="container">
+  {% include "alert.html" %}
+    <main>
+      <header>
+        <h1>Dashboard</h1>
+      </header>
+      <section>
+        <div class="dashboard">
+          <div class="dashboard-order row col-12">
+            <div class="dashboard-groups mb-3 col-6 col-md-4 p-3">
+              <div class="groups-header mb-3">
+                <small class="text-muted">Group results by:</small>
+              </div>
+              <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input large"
+                      value="wallet" id="walletCheckbox"/>
+                  <label class="custom-control-label" for="walletCheckbox">
+                    Wallet
+                  </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input"
+                      value="subwallet" id="subwalletCheckbox"/>
+                  <label class="custom-control-label" for="subwalletCheckbox">
+                    Subwallet
+                  </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input"
+                      value="currency "id="currencyCheckbox"/>
+                  <label class="custom-control-label" for="currencyCheckbox">
+                    Currency
+                  </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input"
+                      value="category" id="categoryCheckbox"/>
+                  <label class="custom-control-label" for="categoryCheckbox">
+                    Category
+                  </label>
+                </div>
+                <a class="btn border-secondary" id="uncheckChoices">
+                  Uncheck All
+                </a>
+              </div>
+            </div>
+            <div class="card bg-dark border-secondary group-order col-6 col-md-4">
+              <div class="card-header bg-secondary">Your choices:</div>
+              <div class="card-body">
+                <ol class="card-groups" id="group-order"></ol>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-balance xrate_popup"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="{{ url_for('static', filename='js/xrate_popup.js') }}"></script>
+<script type="text/javascript">
+
+// Show Popup with Exchange Rate:
+const valuesToConvert = document.querySelectorAll('.xrate_popup');
+
+valuesToConvert.forEach(value => {
+  value.addEventListener('mouseover', displayXRate);
+  value.addEventListener('mouseout', closeXRate);
+});
+
+// Display and Apply Checkbox choices:
+const groupCheckbox = document.querySelectorAll('.dashboard-groups input[type=checkbox]');
+const groupOrder = document.getElementById('group-order');
+const uncheckChoices = document.getElementById('uncheckChoices');
+const dashboardBalance = document.querySelector('.dashboard-balance');
+
+uncheckChoices.addEventListener('click', uncheckAll);
+groupCheckbox.forEach(checkbox => {
+  checkbox.addEventListener('change', applyChoice)
+});
+
+
+function displayChoice(choiceName, is_checked) {
+  if(is_checked) {
+    var liNew = document.createElement('li');
+    liNew.innerText = choiceName.charAt(0).toUpperCase() + choiceName.slice(1);
+    liNew.id = choiceName
+    groupOrder.append(liNew);
+  } else {
+    var liOld = document.getElementById(choiceName);
+    groupOrder.removeChild(liOld);
+  }
+};
+
+function displayResults() {
+  while (dashboardBalance.firstChild) {
+    dashboardBalance.removeChild(dashboardBalance.firstChild);
+  };
+  const choiceList = new Array();
+  for(let choice of groupOrder.childNodes) {
+    choiceList.push(choice.innerText.toLowerCase());
+  };
+  var url = new URL("{{ url_for('main.dashboard_group', _external=True) }}")
+  var params = choiceList.map(choice => {
+    return `groups=${choice}`
+  });
+  url.search = params.join('&');
+  fetch(url)
+  .then(response => response.json())
+  .then(result => {
+    for(let balance of result.balance) {
+      var subBalanceDiv = document.createElement('div');
+      subBalanceDiv.classList.add('d-inline-block');
+
+      var subBalanceUl = document.createElement('ul');
+      //subBalanceUl.classList.add('xrate_popup');
+
+      for(let i=0; i < balance.length-1; i++) {
+        var subBalanceLi = document.createElement('li')
+        subBalanceLi.innerText = balance[i];
+        if(typeof(balance[i]) === 'number' && isFinite(balance[i])) {
+          subBalanceLi.classList.add('bg-secondary');
+          subBalanceLi.classList.add('text-primary');
+
+          var currencySpan = document.createElement('span');
+          currencySpan.innerText = balance[i+1];
+          currencySpan.style.fontSize = '65%';
+
+          subBalanceLi.appendChild(currencySpan);
+        }
+        subBalanceUl.appendChild(subBalanceLi);
+      }
+      subBalanceDiv.appendChild(subBalanceUl);
+      dashboardBalance.appendChild(subBalanceDiv);
+    }
+  })
+};
+
+function applyChoice(e) {
+  is_checked = this.checked;
+  choiceName = this.value;
+  displayChoice(choiceName, is_checked);
+  displayResults();
+};
+
+function uncheckAll() {
+  groupCheckbox.forEach(checkbox => {
+    if(checkbox.checked) {
+      checkbox.checked = false;
+      displayChoice(checkbox.value, false);
+    }
+    while(dashboardBalance.firstChild) {
+      dashboardBalance.removeChild(dashboardBalance.firstChild);
+    };
+  });
+}
+
+
+</script>
+{% endblock %}
+<!-- End dashboard.html -->

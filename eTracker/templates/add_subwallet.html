@@ -1,0 +1,33 @@
+<!-- add_subwallet.html -->
+<div class="modal fade border wholePageModal" id="addSubwallet" tabindex="-1" role="dialog"
+    aria-labelledby="addSubwalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addSubwalletLabel">Add Subwallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.add_subwallet') }}" method="post">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.subwallet_wallets.label }}
+            {{ form.subwallet_wallets(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.subwallet_subwallets.label }}
+            {{ form.subwallet_subwallets(class="form-control") }}
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-primary"
+              value="Add" id="addSubwallet_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End add_subwallet.html -->

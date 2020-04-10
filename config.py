@@ -1,8 +1,10 @@
 import os
+from dotenv import load_dotenv
 
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 class Config(object):
 
@@ -24,3 +26,19 @@ class Config(object):
 
     # Exchange Rate API:
     EX_RATE_API = os.environ.get('EX_RATE_API')
+
+    # Recaptcha Keys:
+    RECAPTCHA_PRIVATE_KEY = os.environ.get('RC_PRIVATE_KEY')
+    RECAPTCHA_PUBLIC_KEY = os.environ.get('RC_PUBLIC_KEY')
+
+    # Email Service:
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = 'pythonarts@op.pl'
+    MAIL_ADMINS = ['pythonarts@op.pl']
+
+    # API:
+    JSON_SORT_KEYS = False

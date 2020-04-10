@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% if title %} {{ title }} - eTracker {% else %} EXPenseTracker {% endif %}
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_base.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
+    <!-- testing button for sidebar show/hide -->
+    <button id="mySidebarMenu" class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- ------------------------------------ -->
+    <a class="navbar-brand m-auto" href="{{ url_for('main.test') }}">
+        <span style="color: #007bff; font-size: 45px; font-weight: 900;">e</span><sup class="myNav">TRACKER</sup>
+    </a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#menuCollapsed">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="menuCollapsed">
+        {% if current_user.is_authenticated %}
+        <div class="navbar-nav ml-auto">
+            <ul class="navbar-nav">
+              <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.wallets') }}">
+                <i class="fa fa-google-wallet"></i>Wallet</a></li>
+              <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.expenses') }}">
+                <i class="fas fa-money-bill-wave-alt"></i>Cashflow</a></li>
+              <li class="nav-item myNavBtn"><a class="nav-link" href="#">
+                <i class="fa fa-money-check-edit-alt"></i>Planning</a></li>
+              <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('main.tools') }}">
+                <i class="fa fa-money-check-edit-alt"></i>Settings</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        <div class="navbar-nav ml-auto">
+            <ul class="navbar-nav">
+                {% if current_user.is_anonymous %}
+                <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('auth.register') }}">Sign Up</a></li>
+                <li class="nav-item myNavBtn"><a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a></li>
+                {% else %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Profile</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Account Information</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </li>
+
+                <li class="nav-item myNavLogged">
+                    <a class="nav-link text-white text-center" href="{{ url_for('auth.logout') }}">
+                        Logged
+                    </a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+
+        {% block aside %}{% endblock %}
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="col-10 ml-auto alert alert-{% if category %}{{ category }} {% else %} 'info' {% endif %}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+    $("#mySidebarMenu").click(function() { set_css(); })
+
+
+    function set_css() {
+        $(".sidebar").toggleClass('d-none');
+    };
+
+</script>
+{% endblock %}

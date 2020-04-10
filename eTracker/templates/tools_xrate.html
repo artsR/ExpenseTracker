@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<aside>
+  <div class="container">
+    <div class="sidemenu">MENU</div>
+    <ul class="options">
+      <li><a href="{{ url_for('main.tools') }}">Tools</a></li>
+      <li><a href="{{ url_for('main.exchange_rate') }}">Exchange Rate</a></li>
+    </ul>
+    <div style="clear: both;"></div>
+  </div>
+</aside>
+<div class="bootstrap-iso">
+  <div class="container">
+    <main>
+      <div class="card bg-light mb-3">
+        <div class="card-header h2" id="xRate-header">
+          Currency Exchange Rate
+        </div>
+        <div class="card-body xRate-table">
+          <table class="table">
+            <tr class="table-dark">
+              <th></th>
+              {% for currency in current_user.currencies %}
+              <th scope="col" class="to-currency" data-currency="{{currency.abbr}}">
+              {{currency.abbr}}
+              </th>
+              {% endfor %}
+            </tr>
+            {% for currency in current_user.currencies %}
+            <tr>
+              <th scope="row" class="table-dark from-currency"
+                  data-currency="{{currency.abbr}}">
+              <small>1.0 </small>{{currency.abbr}}
+              </th>
+              {% for _ in current_user.currencies %}
+              <td class="table-light">-.----</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </table>
+          <div class="row d-flex justify-content-between" id="xRate"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', getExchangeRate);
+
+const xRateHeader = document.getElementById('xRate-header');
+
+function cachedFetch(url, today) {
+  let cacheKey = url;
+  let cache = localStorage.getItem(cacheKey);
+
+  if (cache !== null) {
+    let cacheDate = localStorage.getItem(cacheKey+':date');
+    if (cacheDate === today) {
+      let response = new Response(new Blob([cache], {type: 'application/json'}));
+      return Promise.resolve(response)
+    } else {
+      localStorage.removeItem(cacheKey);
+      localStorage.removeItem(cacheKey + ':date');
+    }
+  }
+  return (
+    fetch(url)
+    .then(response => {
+      if (response.status === 200) {
+        let responseHeader = response.headers.get('Content-Type');
+        if (responseHeader && responseHeader.match(/application\/json/i)) {
+          response.clone().text()
+          .then(content => {
+            localStorage.setItem(cacheKey, content)
+            localStorage.setItem(cacheKey + ':date', today)
+          })
+        }
+      }
+      return response
+    })
+  )
+};
+
+function displayExchangeRate(data, baseCurrency, fromCurrencyElement, toCurrencyList) {
+  let currentCell = fromCurrencyElement;
+
+  for(let toCurrency of toCurrencyList) {
+    if (baseCurrency === toCurrency.dataset.currency) {
+      currentCell = currentCell.nextElementSibling;
+      currentCell.innerText = '1.000';
+    } else {
+      currentCell = currentCell.nextElementSibling;
+      currentCell.innerText = (
+        Math.round((
+          Number(data.rates[toCurrency.dataset.currency])
+          + Number.EPSILON
+        ) * 1000) / 1000
+      );
+    }
+  }
+};
+
+function getExchangeRate() {
+  const url = 'https://api.exchangeratesapi.io/latest?base=';
+  var today = new Date();
+  today = `${today.getFullYear()}-` +
+          `${String(today.getMonth()+1).padStart(2,'0')}-` +
+          `${String(today.getDate()).padStart(2,'0')}`;
+
+  const fromCurrencyList = document.querySelectorAll('.xRate-table .from-currency');
+  const toCurrencyList = document.querySelectorAll('.xRate-table .to-currency');
+
+  fromCurrencyList.forEach((fromCurrencyElement, i) => {
+    var baseCurrency = fromCurrencyElement.dataset.currency;
+
+    cachedFetch(url+baseCurrency, today)
+    .then(response => response.json())
+    .then(data =>
+      displayExchangeRate(data, baseCurrency, fromCurrencyElement, toCurrencyList)
+    )
+    .catch(err => {
+    	alert(`Error: ${err}`);
+    });
+  });
+};
+
+
+</script>
+{% endblock %}

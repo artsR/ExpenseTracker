@@ -1,0 +1,25 @@
+<!-- wallets_tabs.html -->
+<section>
+  <div class="col-12">
+    <ul class="nav nav-tabs">
+      {% for wallet in wallets %}
+      <li class="nav-item" id="nav-tab" role="tablist">
+        <a class="nav-link" id="wallet-{{wallet.id}}-tab"
+            href="#wallet{{wallet.id}}" data-toggle="tab"
+            style="color: {{wallet.color}}; border-color: {{wallet.color}};">
+        {{wallet.name}}
+        </a>
+      </li>
+      {% endfor %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+          New<i class="fa fa-plus-circle fa-1x ml-2"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" data-toggle="tab" href="#new_wallet">Wallet</a>
+          <a class="dropdown-item" data-toggle="tab" href="#new_subwallet">Subwallet</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>

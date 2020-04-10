@@ -1,0 +1,305 @@
+<!-- tools_modals.html -->
+<!-- New Wallet -->
+<div class="modal fade border wholePageModal" id="newWallet" tabindex="-1" role="dialog"
+    aria-labelledby="newWalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="newWalletLabel">New Wallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.new_wallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <div class="pickr">
+              <label for="color-picker-1" class="col-form-label">Color</label>
+              <button type="button" class="pcr-button" id="color-picker-1"></button>
+              <input type="hidden" name="wallet_color" id="new_wallet_color"
+                  value="" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <input class="form-control" name="wallet_name" id="new_wallet_name"
+                type="text" placeholder="Give it name..." value="" required/>
+          </div>
+          <div class="form-group">
+            <select class="form-control" name="currency" required>
+              {% for currency in currencies %}
+              <option value="{{currency.id}}">{{currency.abbr}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-success" value="Create"
+                id="newWallet_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End New Wallet -->
+<!-- New Subwallet -->
+<div class="modal fade border wholePageModal" id="newSubwallet" tabindex="-1" role="dialog"
+    aria-labelledby="newSubwalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="newSubwalletLabel">New Subwallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.new_subwallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <input class="form-control" name="name" id="new_subwallet_name"
+                type="text" placeholder="Give it name..." value="" required/>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-success" value="Create"
+                id="newSubwallet_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End New Subwallet -->
+<!-- New Category -->
+<div class="modal fade border wholePageModal" id="newCategory" tabindex="-1" role="dialog"
+    aria-labelledby="newCategoryLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="newCategoryLabel">New Category</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.new_category') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <input class="form-control" name="name" id="new_category_name"
+                type="text" placeholder="Give it name..." value="" required/>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-success" value="Create"
+                id="newCategory_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End New Category -->
+<!-- Add Currency -->
+<div class="modal fade border wholePageModal" id="addCurrency" tabindex="-1" role="dialog"
+    aria-labelledby="addCurrencyLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addCurrencyLabel">Add Currency</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.add_currency') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+            <select class="form-control" name="currency_id" required>
+              {% for currency in currencies %}
+              <option value="{{currency.id}}">{{currency.abbr}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-primary" value="Add"
+                id="addCurrency_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Add Currency -->
+<!-- Edit Wallets -->
+<div class="modal fade wholePageModal" id="editWallet" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary">
+        <h5 class="modal-title" id="editWalletLabel">Wallets</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          {% for wallet in current_user.wallets %}
+          <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary"
+              id="wallet_{{wallet.id}}">
+            {{wallet.name}}
+            <div>
+              <span class="badge badge-light badge-pill">{{wallet.currency.abbr}}</span>
+              <span class="fa fa-edit text-primary update" style="cursor: pointer;"
+                  data-dismiss="modal"></span>
+              <span class="fa fa-minus-square-o text-danger delete" style="cursor: pointer;"
+                  data-dismiss="modal"></span>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Edit Wallets -->
+<!-- Edit Subwallets -->
+<div class="modal fade wholePageModal" id="editSubwallet" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary">
+        <h5 class="modal-title" id="editSubwalletLabel">Subwallets</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          {% for subwallet in current_user.subwallets %}
+          <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary"
+              id="subwallet_{{subwallet.id}}">
+            {{subwallet.name}}
+            <div>
+              <span class="badge badge-light badge-pill">{{subwallet.wallets.all()|count}}
+                <sub class="text-info">wallets</sub></span>
+              <span class="fa fa-edit text-primary update" style="cursor: pointer;"
+                  data-dismiss="modal">
+              </span>
+              <span class="fa fa-minus-square-o text-danger delete" style="cursor: pointer;"
+                  data-dismiss="modal">
+              </span>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Edit Subwallets -->
+<!-- Edit Categories -->
+<div class="modal fade wholePageModal" id="editCategory" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary">
+        <h5 class="modal-title" id="editCategoryLabel">Categories</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          {% for category in current_user.categories %}
+          <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary"
+              id="category_{{category.id}}">
+            {{category.name}}
+            <div>
+              <span class="fa fa-edit text-primary update" style="cursor: pointer;"
+                  data-dismiss="modal">
+              </span>
+              <span class="fa fa-minus-square-o text-danger delete" style="cursor: pointer;"
+                  data-dismiss="modal">
+              </span>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Edit Categories -->
+<!-- Update Wallet -->
+{% include "update_wallet.html" %}
+<!-- End Update Wallet -->
+<!-- Update Subwallet -->
+<div class="modal fade border wholePageModal" id="updateSubwallet" tabindex="-1" role="dialog"
+    aria-labelledby="updateSubwalletLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="updateSubwalletLabel">Update Subwallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.update_subwallet') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='update_subwallet_id' name='subwallet_id' type="hidden" value=""/>
+          <div class="form-group">
+            <input class="form-control" name="subwallet_name" id="update_subwallet_name"
+                type="text" value="" required/>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-info" value="Update"
+                id="updateSubwallet_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Update Subwallet -->
+<!-- Update Category -->
+<div class="modal fade border wholePageModal" id="updateCategory" tabindex="-1" role="dialog"
+    aria-labelledby="updateCategoryLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 350px;">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="updateCategoryLabel">Update Category</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('main.update_category') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <input id='update_category_id' name='category_id' type="hidden" value=""/>
+          <div class="form-group">
+            <input class="form-control" name="category_name" id="update_category_name"
+                type="text" value="" required/>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+            <input type="submit" class="btn btn-info" value="Update"
+                id="updateCategory_submit"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Update Category -->
+<!-- End tools_modals.html -->

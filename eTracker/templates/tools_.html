@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block aside %}
+<aside class="col-2 d-none d-md-block bg-dark sidebar">
+<!-- hidden bar with options regarding Expenses: Add_expense, Show, Charts -->
+    <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('main.exchange_rate') }}">Exchange Rate</a></li>
+            <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('main.currency') }}">Currency</a></li>
+            <li class="nav-item"><a class="nav-link active"
+                href="{{ url_for('main.category') }}">Category</a></li>
+            <li class="nav-item"><a class="nav-link"
+                href="#">Reports</a></li>
+        </ul>
+    </div>
+</aside>
+{% endblock %}
+
+{% block app_content %}{% endblock %}

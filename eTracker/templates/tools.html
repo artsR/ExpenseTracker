@@ -1,21 +1,172 @@
+<!-- tools.html -->
 {% extends "base.html" %}
 
-{% block aside %}
-<aside class="col-2 d-none d-md-block bg-dark sidebar">
-<!-- hidden bar with options regarding Expenses: Add_expense, Show, Charts -->
-    <div class="sidebar-sticky">
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link"
-                href="{{ url_for('main.exchange_rate') }}">Exchange Rate</a></li>
-            <li class="nav-item"><a class="nav-link"
-                href="{{ url_for('main.currency') }}">Currency</a></li>
-            <li class="nav-item"><a class="nav-link active"
-                href="{{ url_for('main.category') }}">Category</a></li>
-            <li class="nav-item"><a class="nav-link"
-                href="#">Reports</a></li>
-        </ul>
-    </div>
-</aside>
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/monolith.min.css"/>
 {% endblock %}
 
-{% block app_content %}{% endblock %}
+{% block content %}
+<aside>
+  <div class="container">
+    <div class="sidemenu">MENU</div>
+    <ul class="options">
+      <li><a href="{{ url_for('main.tools') }}">Tools</a></li>
+      <li><a href="{{ url_for('main.exchange_rate') }}">Exchange Rate</a></li>
+    </ul>
+    <div style="clear: both;"></div>
+  </div>
+</aside>
+<div class="bootstrap-iso">
+  <div class="container">
+    {% include "alert.html" %}
+    <main>
+      <header>
+        <h1>Settings</h1>
+      </header>
+      {% include "tools_content.html" %}
+      {% include "tools_modals.html" %}
+      {% include "modal_confirmations.html" %}
+    </main>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+<script type="text/javascript">
+// Display color picker for new Wallet:
+const pickr1 = new Pickr({
+  el: '#color-picker-1',
+  theme: 'monolith',
+  default: '#303030',
+
+  components: {
+    preview: true,
+    opacity: true,
+    hue: true,
+
+    interaction: {
+      input: true,
+      clear: true,
+      save: true,
+    }
+  }
+});
+pickr1.on('save', function(){
+    document.getElementById('new_wallet_color').value = pickr1.getSelectedColor().toHEXA().toString();
+});
+// Display color picker for update Wallet:
+const pickr2 = new Pickr({
+  el: '#color-picker-2',
+  theme: 'monolith',
+  default: '#303030',
+
+  components: {
+    preview: true,
+    opacity: true,
+    hue: true,
+
+    interaction: {
+      input: true,
+      clear: true,
+      save: true,
+    }
+  }
+});
+pickr2.on('save', function(){
+    document.getElementById('update_wallet_color').value = pickr2.getSelectedColor().toHEXA().toString();
+});
+
+// Load Wallets and Subwallets names to modal's <select>:
+document.addEventListener('DOMContentLoaded', addSubwallet)
+function addSubwallet() {
+  fetch('{{ url_for('main.add_subwallet') }}')
+  .then(res => res.text())
+  .then(html => {
+    document.querySelector('main').insertAdjacentHTML('beforeend', html);
+  })
+};
+
+// Handle Update and Delete action for list of Items in Edit option:
+const editItems = document.querySelectorAll('.modal ul li span.fa');
+editItems.forEach((item, i) => {
+  item.addEventListener('click', editItemHandler);
+});
+
+function editItemHandler(e) {
+  var item = e.target.parentElement.parentElement.id.split('_')[0];
+  var item_id = e.target.parentElement.parentElement.id.split('_')[1];
+
+  if(e.target.classList.contains('update')) {
+    if(item === 'wallet') {
+      fetch(`/wallets/${item_id}`)
+      .then(res => res.json())
+      .then(data => {
+        var wallet_name = data.name;
+        var wallet_color = data.color;
+        // Set current wallet's property:
+        pickr2.setColor(wallet_color);
+        document.getElementById(`update_wallet_id`).value = item_id;
+        document.getElementById(`update_wallet_name`).value = wallet_name;
+        document.getElementById(`update_wallet_color`).value = pickr2.getColor().toHEXA().toString();
+        $(`#updateWallet`).modal('show');
+      });
+    } else {
+      var item_name = e.target.parentElement.parentElement.childNodes[0].nodeValue;
+      document.getElementById(`update_${item}_id`).value = item_id;
+      document.getElementById(`update_${item}_name`).value = item_name.trim();
+      $(`#update${item.charAt(0).toUpperCase() + item.slice(1)}`).modal('show');
+    }
+  } else if(e.target.classList.contains('delete')) {
+    document.getElementById(`delete_${item}_id`).value = item_id;
+    $(`#delete${item.charAt(0).toUpperCase() + item.slice(1)}`).modal('show');
+  }
+};
+
+// Enable Remove model to remove Subwallet from Wallet:
+const removeSubwalletMenu = document.querySelectorAll('.card-footer span.removeMenu');
+removeSubwalletMenu.forEach((item, i) => {
+  item.addEventListener('click', switchRemoveMenu);
+});
+
+function switchRemoveMenu(e) {
+  var currentCard = e.target.closest('.card');
+  currentCard.querySelectorAll('.badge i.remove').forEach((item, i) => {
+    item.style.display = item.style.display === 'inline-block' ? 'none' : 'inline-block';
+  });
+};
+
+// Add Event Listener for subwallets in wallets:
+document.querySelectorAll('#wallet_subwallet .badge i.remove').forEach((item, i) => {
+  item.addEventListener('click', removeSubwallet);
+});
+// Add Event Listener for Exchange Rate currencies:
+document.querySelectorAll('#exchange_rate_currency .badge i.remove').forEach((item, i) => {
+  item.addEventListener('click', removeCurrency);
+});
+
+// Show confirmation to remove Subwallet from Wallet
+function removeSubwallet(e) {
+  var wallet_id = e.target.parentElement.dataset.id.split('_')[1];
+  var subwallet_id = e.target.parentElement.dataset.id.split('_')[2];
+
+  document.getElementById('remove_wallet_id').value = wallet_id;
+  document.getElementById('remove_subwallet_id').value = subwallet_id;
+  $(`#removeSubwallet`).modal('show');
+};
+
+// Show confirmation to remove Subwallet from Wallet
+function removeCurrency(e) {
+  var currency_id = e.target.parentElement.dataset.id.split('_')[1];
+
+  document.getElementById('remove_currency_id').value = currency_id;
+  $(`#removeCurrency`).modal('show');
+};
+
+
+</script>
+{% endblock %}
+<!-- End tools.html -->

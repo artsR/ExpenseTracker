@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    {% include "meta.html" %}
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style media="screen">
+    .basic {
+      position: absolute;
+      left: 10px;
+      top: 30%;
+      width: 100%;
+      height: 25%;
+      background: #000;
+      opacity: 0;
+      transform: scale(0);
+      transition: transform .5s .5s, opacity 1s .2s;
+    }
+    .formula {
+      position: absolute;
+      left: 10px;
+      top: 35%;
+    }
+    #btn:hover ~ .basic {
+      opacity: .85;
+      transform: scale(1);
+      transition: transform .5s .4s;
+    }
+    .basic {
+      opacity: .85;
+      transform: scale(1);
+      transition: transform .5s .4s;
+    }
+    .form-control {
+      min-width: 150px;
+    }
+    input[type=submit] {
+      background: yellow;
+    }
+    </style>
+  </head>
+  <body>
+    <a href="/">Return to Index page</a>
+    <button id="btn" type="button" name="button">Hover ME</button>
+    <div class="basic">
+      <form class="form-row justify-content-between" action="" method="get">
+        {{ form.csrf_token }}
+        <div class="form-group d-flex flex-column justify-content-between col-sm-3">
+        {{ form.amount_min(class="form-control form-control-sm", placeholder="Amount_min") }}
+        {{ form.amount_max(class="form-control form-control-sm", placeholder="Amount_max") }}
+        </div>
+        <div class="form-group d-flex flex-column justify-content-between">
+        {{ form.date_start(class="form-control form-control-sm") }}
+        {{ form.date_end(class="form-control form-control-sm") }}
+        </div>
+        <div class="form-group">
+        {{ form.currencies(class="form-control form-control-sm", size=3) }}
+        </div>
+        <div class="form-group">
+        {{ form.wallets(class="form-control form-control-sm", size=3) }}
+        </div>
+        <div class="form-group">
+        {{ form.subwallets(class="form-control form-control-sm", size=3) }}
+        </div>
+        <div class="form-group">
+        {{ form.categories(class="form-control form-control-sm", size=3) }}
+        </div>
+        <div class="form-group">
+        {{ form.submit(class="btn h-100") }}
+        </div>
+        <input type="text" name="clear" value="jestem_clear"/>
+        {% for field in form %}
+          {% if field.errors %}
+          <h5>{{field.label}}</h5>
+          <h3>{{field.errors}}</h3>
+          {% endif %}
+        {% endfor %}
+      </form>
+    </div>
+    <div class="" style="width: 100%; height: 150px; background: #ff3200;"></div>
+    <div class="" style="width: 100%; height: 150px; background: #ffaa00;"></div>
+    <div class="" style="width: 100%; height: 150px; background: #2132dd;"></div>
+    <div class="" style="width: 100%; height: 150px; background: #20ee40;"></div>
+  </body>
+</html>
