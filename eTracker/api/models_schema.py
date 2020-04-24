@@ -111,7 +111,7 @@ class WalletSchema(Schema):
     def get_links(self, object):
         links = {
             'self': url_for('api.wallets'),
-            'currency': url_for('api.currencies')
+            'currency': url_for('api.currencies'),
             'subwallets': url_for('api.subwallets'),
             'transactions': url_for('api.transactions'),
         }
