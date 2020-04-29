@@ -676,7 +676,7 @@ def transfer():
 @bp.route('/cashflow/new/income/', methods=['POST'])
 @login_required
 def income():
-
+    
     if request.method == 'POST':
         wallet = Wallet.query.get_or_404(request.form['wallet_id'])
         if wallet.user != current_user:

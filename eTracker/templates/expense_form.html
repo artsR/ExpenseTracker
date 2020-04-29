@@ -3,6 +3,7 @@
     style="display: none;" id="expense_div">
   <form class="form-row align-items-center p-5"
       action="{{ url_for('main.expense') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="col-lg-4 mr-auto">
       <div class="form-group form-group-sm ml-0">
         <input class="form-control" type="date" name="transaction_date" required/>

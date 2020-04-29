@@ -3,6 +3,7 @@
     style="display: none;" id="transfer_div">
   <form class="form-row align-items-center p-4"
       action="{{ url_for('main.transfer') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="col-lg-3 mr-auto">
       <div class="form-group form-group-sm ml-0">
         <select name="wallet_id1" class="form-control col-12" id="wallet_id1" required>
