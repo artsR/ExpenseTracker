@@ -46,7 +46,7 @@ class UploadForm(FlaskForm):
 
 class WalletForm(FlaskForm):
     wallet_name = StringField('Name', [DataRequired()])
-    color = StringField('Color', [DataRequired()])
+    wallet_color = StringField('Color', [DataRequired()])
     currency = SelectField('Currency', validators=[DataRequired()], coerce=int)
     submit = SubmitField('Create')
 
