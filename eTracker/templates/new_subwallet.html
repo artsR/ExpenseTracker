@@ -7,11 +7,12 @@
         method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="col">
-        {{ form.wallet_name(class="form-control", placeholder="Give it name...",
-                            id="subwallet_name") }}
+        <input class="form-control" name="name" id="subwallet_name"
+            type="text" placeholder="Give it name..." value="" required/>
       </div>
       <div class="col">
-        {{ form.submit(class="btn btn-success btn-block mt-3", id="submit_subwallet") }}
+        <input type="submit" class="btn btn-success btn-block mt-3" value="Create"
+            id="submit_subwallet"/>
       </div>
     </form>
     <div class="card bg-secondary mx-4 my-3" style="max-width: 15rem;">
