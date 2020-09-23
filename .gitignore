@@ -3,7 +3,4 @@ __pycache__/
 *.pyc
 
 .env
-
-*.gif
-*.jpg
-*.zip
+*.db
