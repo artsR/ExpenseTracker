@@ -1,1 +1,1 @@
-web: gunicorn etracker:etracker
+web: gunicorn wsgi:app

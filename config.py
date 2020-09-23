@@ -42,3 +42,5 @@ class Config(object):
 
     # API:
     JSON_SORT_KEYS = False
+
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
