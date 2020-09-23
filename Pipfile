@@ -27,6 +27,7 @@ flask-mail = "*"
 requests = "*"
 marshmallow = "*"
 flask-httpauth = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
