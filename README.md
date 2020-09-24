@@ -9,6 +9,13 @@ Technology used:
 * CSS framework
 
 
+## Usage
+
+You can play with app: [Heroku](https://exp-tracker-cash.herokuapp.com/)
+user: first@example.pl
+pass: First123
+
+
 ## App Overview
 
 e<sup>TRACKER</sup> is web application for managing and tracking your funds, cashflow and financial accounts.
