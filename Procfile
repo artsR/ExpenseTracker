@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app
+web: flask create_db; gunicorn wsgi:app
