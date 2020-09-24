@@ -12,8 +12,8 @@ Technology used:
 ## Usage
 
 You can play with app: [Heroku](https://exp-tracker-cash.herokuapp.com/)
-user: first@example.pl
-pass: First123
+user: first@example.pl  
+pass: First123  
 
 
 ## App Overview
