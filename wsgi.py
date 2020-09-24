@@ -1,3 +1,4 @@
-from eTracker import create_app
+from eTracker import create_app, cli
 
 app = create_app()
+cli.register(app)
